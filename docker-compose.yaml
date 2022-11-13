@@ -1,0 +1,24 @@
+version: "3.4"
+
+services:
+  pinman-node-dev:
+    build:
+      context: .
+      target: node-dev
+    image: alexstojda/pinman-development:${VERSION:-local}
+
+  pinman-go-dev:
+    build:
+      context: .
+      target: go-dev
+    image: alexstojda/pinman-development:${VERSION:-local}
+
+  pinman:
+    build:
+      context: .
+      target: prod
+    image: alexstojda/pinman:${VERSION:-local}
+    environment:
+      - NAME=value
+    ports:
+      - "8080"

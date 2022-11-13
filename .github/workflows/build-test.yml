@@ -1,0 +1,108 @@
+name: Build and Test & publish
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Go environment
+        uses: actions/setup-go@v3.3.1
+        with:
+          go-version-file: go.mod
+          # Used to specify whether caching is needed. Set to true, if you'd like to enable caching.
+          cache: true
+          # Used to specify the path to a dependency file - go.sum
+          cache-dependency-path: go.sum
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.5.1
+        with:
+          # File containing the version Spec of the version to use.  Examples: .nvmrc, .node-version, .tool-versions.
+          node-version-file: .nvmrc
+          # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
+          cache: yarn
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+      - name: Setup dependencies
+        run: make setup
+      - name: Run frontend tests
+        run: yarn test
+      - name: Run backend tests
+        run: go test ./...
+      - name: Build Docker image
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+
+  publish:
+    needs: install-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
+      - name: Conventional Changelog Action
+        id: semver
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          fallback-version: 0.0.0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          git-push: false
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: docker/metadata-action@v4.1.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=semver,pattern={{version}},value=${{ steps.semver.outputs.tag }}
+      #          type=ref,event=branch
+      #          type=ref,event=pr
+
+      - name: Build and push Docker image
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Push changes
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        run: |
+          git push origin main --follow-tags
+
+      - name: Create Release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          draft: false
+          name: ${{ steps.semver.outputs.tag }}
+          tag: ${{ steps.semver.outputs.tag }}
+          body: ${{ steps.semver.outputs.clean_changelog }}
+          token: ${{ github.token }}

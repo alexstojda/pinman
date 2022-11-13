@@ -1,0 +1,11 @@
+/node_modules
+
+.dockerignore
+.gitignore
+.git
+.idea
+.minikube
+deploy-minikube.sh
+docker-compose.yaml
+Dockerfile
+README.md
