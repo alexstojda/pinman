@@ -1,6 +1,7 @@
 package web
 
 import (
+	"gorm.io/gorm"
 	"pinman/web/api/health"
 	"pinman/web/api/hello"
 
@@ -14,13 +15,15 @@ import (
 
 type Server struct {
 	SPAPath string
+	GormDB  *gorm.DB
 	Health  *health.Health
 	Hello   *hello.Hello
 }
 
-func NewServer(spaPath string) *Server {
+func NewServer(spaPath string, gormDb *gorm.DB) *Server {
 	return &Server{
 		SPAPath: spaPath,
+		GormDB:  gormDb,
 		Health:  health.NewHealth(),
 		Hello:   hello.NewHello(),
 	}

@@ -1,5 +1,10 @@
-setup: mod
-	yarn install
+setup: mod yarn env-local
+
+env-local:
+	cp .env .env.local
+
+yarn:
+	yarn
 
 mod:
 	go mod download
@@ -13,11 +18,14 @@ build-backend:
 build-frontend:
 	yarn build
 
-run: build-frontend
+run: build-frontend run-migrate
 	SPA_PATH=./build go run cmd/pinman/main.go
 
 run-backend:
 	go run cmd/pinman/main.go
+
+run-migrate:
+	go run cmd/migrate/main.go
 
 run-frontend:
 	REACT_APP_API_HOST=http://localhost:8080 yarn start

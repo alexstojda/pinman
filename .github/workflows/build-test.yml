@@ -63,7 +63,7 @@ jobs:
         continue-on-error: true
 
       - name: Conventional Changelog Action
-        id: semver
+        id: changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
           fallback-version: 0.0.0

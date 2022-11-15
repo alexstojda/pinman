@@ -8,9 +8,25 @@ services:
     image: alexstojda/pinman-development:${VERSION:-local}
 
   pinman-go-dev:
+    depends_on:
+      - postgres
     build:
       context: .
       target: go-dev
+    image: alexstojda/pinman-development:${VERSION:-local}
+
+  migrate-dev:
+    depends_on:
+      - postgres
+    build:
+      context: .
+      target: go-dev
+    command:
+      - run-migrate
+    env_file:
+      - ./.env.local
+    environment:
+      - POSTGRES_HOST=postgres
     image: alexstojda/pinman-development:${VERSION:-local}
 
   pinman:
@@ -22,3 +38,17 @@ services:
       - NAME=value
     ports:
       - "8080"
+
+  ### Dependencies
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./.env.local
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:

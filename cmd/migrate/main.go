@@ -2,9 +2,8 @@ package main
 
 import (
 	"github.com/rs/zerolog/log"
+	"pinman/internal/models"
 	"pinman/internal/utils"
-
-	"pinman/web"
 )
 
 func main() {
@@ -18,6 +17,10 @@ func main() {
 		log.Fatal().Err(err).Msg("could not connect to DB")
 	}
 
-	server := web.NewServer(config.SPAPath, gormDb)
-	server.StartServer()
+	err = gormDb.AutoMigrate(&models.User{})
+	if err != nil {
+		log.Fatal().Err(err).Msg("migration failed")
+	}
+
+	log.Info().Msg("migration completed.")
 }

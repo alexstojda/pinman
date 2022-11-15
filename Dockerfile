@@ -31,6 +31,7 @@ RUN make mod
 
 COPY --chown=golang:root . ./
 RUN go build -v -o pinman ./cmd/pinman/
+RUN go build -v -o migrate ./cmd/migrate/
 
 ENTRYPOINT ["make"]
 #CMD ["test"]
@@ -43,11 +44,12 @@ COPY --from=go-dev /etc/passwd /etc/group  /etc/
 COPY --from=go-dev /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # Kube crashes if there isn't a tmp directory to write error logs to
 COPY --from=go-dev --chown=golang:root /tmp /tmp
-COPY --from=go-dev --chown=golang:root /app/pinman /app/
+COPY --from=go-dev --chown=golang:root /app/pinman /app/migrate /app/bin/
 COPY --from=node-dev --chown=golang:root /usr/src/app/build /app/html
 
 USER golang:root
 EXPOSE 8080
 
 ENV SPA_PATH=/app/html
-ENTRYPOINT ["/app/pinman"]
+ENTRYPOINT ["/app/bin"]
+CMD ["pinman"]
