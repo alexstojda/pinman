@@ -66,6 +66,8 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
+          git-user-name: github-actions
+          git-user-email: actions@github.com
           fallback-version: 0.0.0
           github-token: ${{ secrets.GITHUB_TOKEN }}
           git-push: false
