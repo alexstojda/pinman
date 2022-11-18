@@ -33,6 +33,18 @@ run-frontend:
 test:
 	@go test ./...
 
+keys-dev:
+	@echo "Generating key-pair for access_token..."
+	@ssh-keygen -f `pwd`/access_token -t rsa -N '' -q
+	@sed -i '' -e "s/ACCESS_TOKEN_PRIVATE_KEY.*/ACCESS_TOKEN_PRIVATE_KEY=`cat ./access_token | base64`/" "./.env.local"
+	@sed -i '' -e "s/ACCESS_TOKEN_PUBLIC_KEY.*/ACCESS_TOKEN_PUBLIC_KEY=`cat ./access_token.pub | base64`/" "./.env.local"
+	@rm -r ./access_token ./access_token.pub
+	@echo "Generating key-pair for refresh_token..."
+	@ssh-keygen -f `pwd`/refresh_token -t rsa -N '' -q
+	@sed -i '' -e "s/REFRESH_TOKEN_PRIVATE_KEY.*/REFRESH_TOKEN_PRIVATE_KEY=`cat ./refresh_token | base64`/" "./.env.local"
+	@sed -i '' -e "s/REFRESH_TOKEN_PUBLIC_KEY.*/REFRESH_TOKEN_PUBLIC_KEY=`cat ./refresh_token.pub | base64`/" "./.env.local"
+	@rm -r ./refresh_token ./refresh_token.pub
+
 #test-cov:
 #	mkdir -p coverage
 #	@go test -covermode=atomic -coverprofile=./coverage/coverage.txt ./...
