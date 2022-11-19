@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"gorm.io/gorm"
 	"pinman/web/api/auth"
 	"pinman/web/api/health"
@@ -57,28 +56,6 @@ func (s *Server) StartServer() {
 		},
 	}))
 
-	prometheus := ginprometheus.NewPrometheus("gin")
-
-	// Prevents high cardinality of metrics Source: https://github.com/zsais/go-gin-prometheus#preserving-a-low-cardinality-for-the-request-counter
-	prometheus.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
-		url := c.Request.URL.Path // Query params are dropped here so there is not a metric for every permutation of query param usage on a route
-
-		//  If a route uses parameters, replace the parameter value with its name. Else there will be a metric for the route
-		//  with every possible value of that parameter and this will cause performance issues in Prometheus.
-		//
-		//  If your service uses route parameters, uncomment the for loop below and add a case for each parameter. The example case
-		//  below works for routes with a parameter called 'name', like '/api/function/:name'
-		//  --
-		//    for _, p := range c.Params {
-		//      switch p.Key {
-		//      case "name":
-		//        url = strings.Replace(url, p.Value, ":name", 1)
-		//      }
-		//    }
-		return url
-	}
-	prometheus.Use(router)
-
 	router.Use(errorHandler)
 
 	// API ROUTES
@@ -95,6 +72,9 @@ func (s *Server) StartServer() {
 	if s.SPAPath != "" {
 		router.Use(static.Serve("/", static.LocalFile(s.SPAPath, true)))
 	}
+
+	// Uncomment below to enable prometheus metrics
+	//ConfigurePrometheus(router, []string{})
 
 	err := router.Run()
 	if err != nil {
