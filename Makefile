@@ -14,6 +14,11 @@ mod:
 clean:
 	@rm -rf $(FRONTEND_DIR)/build
 
+generate:
+	go install "github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.2"
+	mkdir -p ./internal/app/generated
+	oapi-codegen -config ./api/oapi-codegen.config.yaml ./api/openapi.yaml
+
 build: build-backend build-frontend
 
 build-backend:

@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  description: A web application for the management of a pinball league
+  title: PinMan - Pinball League Management
+  version: 0.1.0
+servers:
+- url: /
+paths:
+  /auth/register:
+    post:
+      description: Registers a new user account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRegister'
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+          description: User was registered successfully
+        "400":
+          description: request was malformed
+      tags:
+      - auth
+  /auth/login:
+    post:
+      description: Retrieve an access and refresh token to authenticate requests to
+        the api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userLogin'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/loginResponse'
+          description: User was registered authenticated
+        "400":
+          description: request was malformed
+        "401":
+          description: unauthorized access for a lack of authentication
+        "403":
+          description: forbidden access for a lack of sufficient privileges
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      description: Refresh an access token
+      security:
+        - oauth:
+            - user
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/refreshTokenResponse'
+          description: Token successfully refreshed
+        "400":
+          description: request was malformed
+        "401":
+          description: unauthorized access for a lack of authentication
+        "403":
+          description: forbidden access for a lack of sufficient privileges
+      tags:
+      - auth
+  /users/me:
+    post:
+      description: Retrieve profile information of the currently authenticated user
+      security:
+        - oauth:
+            - user
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+          description: Successful response
+        "400":
+          description: request was malformed
+        "401":
+          description: unauthorized access for a lack of authentication
+        "403":
+          description: forbidden access for a lack of sufficient privileges
+      tags:
+      - user
+components:
+  responses:
+    unauthorized:
+      description: unauthorized access for a lack of authentication
+    forbidden:
+      description: forbidden access for a lack of sufficient privileges
+    badRequest:
+      description: request was malformed
+  schemas:
+    user:
+      example:
+        role: role
+        updated_at: updated_at
+        name: name
+        created_at: created_at
+        id: id
+        email: email
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    userRegister:
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        passwordConfirm:
+          type: string
+      type: object
+    userLogin:
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      type: object
+    errorData:
+      properties:
+        error:
+          type: string
+        meta:
+          type: object
+      type: object
+    userResponse:
+      example:
+        user:
+          role: role
+          updated_at: updated_at
+          name: name
+          created_at: created_at
+          id: id
+          email: email
+      properties:
+        user:
+          $ref: '#/components/schemas/user'
+      type: object
+    loginResponse:
+      example:
+        access_token: access_token
+        refresh_token: refresh_token
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+      type: object
+    refreshTokenResponse:
+      example:
+        access_token: access_token
+      properties:
+        access_token:
+          type: string
+  securitySchemes:
+    accessCode:
+      flows:
+        authorizationCode:
+          authorizationUrl: /auth/login
+          scopes:
+            user: allows interacting with the system as a registered user
+            admin: allows reading resources
+          tokenUrl: /auth/refresh
+      type: oauth2

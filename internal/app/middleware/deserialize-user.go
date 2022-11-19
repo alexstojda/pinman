@@ -2,17 +2,23 @@ package middleware
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"net/http"
+	"pinman/internal/app/generated"
+	"pinman/internal/models"
+	"pinman/internal/utils"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wpcodevo/golang-gorm-postgres/initializers"
-	"github.com/wpcodevo/golang-gorm-postgres/models"
-	"github.com/wpcodevo/golang-gorm-postgres/utils"
 )
 
-func DeserializeUser() gin.HandlerFunc {
+func AuthenticateUser(db *gorm.DB) generated.MiddlewareFunc {
 	return func(ctx *gin.Context) {
+		// If scopes are not set, this route does not require authentication.
+		if _, exists := ctx.Get(generated.OauthScopes); !exists {
+			return
+		}
+
 		var accessToken string
 		cookie, err := ctx.Cookie("access_token")
 
@@ -30,7 +36,7 @@ func DeserializeUser() gin.HandlerFunc {
 			return
 		}
 
-		config, _ := initializers.LoadConfig(".")
+		config, _ := utils.LoadConfig(".")
 		sub, err := utils.ValidateToken(accessToken, config.AccessTokenPublicKey)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "fail", "message": err.Error()})
@@ -38,7 +44,7 @@ func DeserializeUser() gin.HandlerFunc {
 		}
 
 		var user models.User
-		result := initializers.DB.First(&user, "id = ?", fmt.Sprint(sub))
+		result := db.First(&user, "id = ?", fmt.Sprint(sub))
 		if result.Error != nil {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "fail", "message": "the user belonging to this token no logger exists"})
 			return

@@ -11,7 +11,6 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1
-	github.com/wpcodevo/golang-gorm-postgres v0.0.0-20221002140051-01396cc5d5a0
 	github.com/zsais/go-gin-prometheus v0.1.0
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	gorm.io/driver/postgres v1.4.5

@@ -8,9 +8,11 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
-	auth2 "pinman/internal/app/api/auth"
+	"pinman/internal/app/api"
+	"pinman/internal/app/api/auth"
 	"pinman/internal/app/api/hello"
-	user2 "pinman/internal/app/api/user"
+	"pinman/internal/app/api/user"
+	"pinman/internal/app/generated"
 	"pinman/internal/app/health"
 	"pinman/internal/app/middleware"
 )
@@ -19,21 +21,22 @@ type Server struct {
 	ClientOrigins    []string
 	SPAPath          string
 	SPACacheDisabled bool
-	GormDB           *gorm.DB
+	Db               *gorm.DB
 	Health           *health.Health
 	Hello            *hello.Hello
-	Auth             *auth2.Controller
-	User             *user2.Controller
+	ApiServer        generated.ServerInterface
 }
 
-func NewServer(spaPath string, clientOrigins []string, gormDb *gorm.DB) *Server {
+func NewServer(spaPath string, clientOrigins []string, db *gorm.DB) *Server {
 	return &Server{
 		ClientOrigins: clientOrigins,
 		SPAPath:       spaPath,
 		Health:        health.NewHealth(),
 		Hello:         hello.NewHello(),
-		Auth:          auth2.NewController(gormDb),
-		User:          user2.NewController(gormDb),
+		ApiServer: &api.Server{
+			Auth: auth.NewController(db),
+			User: user.NewController(db),
+		},
 	}
 }
 
@@ -63,16 +66,16 @@ func (s *Server) StartServer() {
 		},
 	}))
 
-	router.Use(errorHandler)
+	generated.RegisterHandlersWithOptions(router, s.ApiServer, generated.GinServerOptions{
+		BaseURL: "/api",
+		Middlewares: []generated.MiddlewareFunc{
+			middleware.AuthenticateUser(s.Db),
+		},
+		ErrorHandler: nil,
+	})
 
-	// API ROUTES
-	apiRouter := router.Group("/api")
-
-	apiRouter.GET("/health", s.Health.Get)
-	apiRouter.GET("/hello", s.Hello.Get)
-
-	auth2.NewRouteController(s.Auth).AuthRoutes(apiRouter)
-	user2.NewRouteController(s.User).UserRoutes(apiRouter)
+	router.GET("/api/health", s.Health.Get)
+	router.GET("/api/hello", s.Hello.Get)
 
 	// SPA ROUTE
 	// Only loaded if SPAPath is defined.
