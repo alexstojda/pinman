@@ -11,6 +11,9 @@ yarn:
 mod:
 	@go mod download
 
+clean:
+	@rm -rf $(FRONTEND_DIR)/build
+
 build: build-backend build-frontend
 
 build-backend:
@@ -20,7 +23,7 @@ build-backend:
 build-frontend:
 	@cd $(FRONTEND_DIR) && yarn build
 
-run: build-frontend run-migrate
+run: clean build-frontend run-migrate
 	@go run cmd/pinman/main.go
 
 run-backend:

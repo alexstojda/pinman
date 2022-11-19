@@ -12,8 +12,9 @@ type Config struct {
 	DBName         string `mapstructure:"POSTGRES_DB"`
 	DBPort         string `mapstructure:"POSTGRES_PORT"`
 
-	SPAPath       string   `mapstructure:"SPA_PATH"`
-	ClientOrigins []string `mapstructure:"CLIENT_ORIGINS"`
+	SPAPath          string   `mapstructure:"SPA_PATH"`
+	SPACacheDisabled bool     `mapstructure:"SPA_CACHE_DISABLED"`
+	ClientOrigins    []string `mapstructure:"CLIENT_ORIGINS"`
 
 	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 	AccessTokenPublicKey   string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY"`

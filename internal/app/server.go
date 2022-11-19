@@ -12,16 +12,18 @@ import (
 	"pinman/internal/app/api/hello"
 	user2 "pinman/internal/app/api/user"
 	"pinman/internal/app/health"
+	"pinman/internal/app/middleware"
 )
 
 type Server struct {
-	ClientOrigins []string
-	SPAPath       string
-	GormDB        *gorm.DB
-	Health        *health.Health
-	Hello         *hello.Hello
-	Auth          *auth2.Controller
-	User          *user2.Controller
+	ClientOrigins    []string
+	SPAPath          string
+	SPACacheDisabled bool
+	GormDB           *gorm.DB
+	Health           *health.Health
+	Hello            *hello.Hello
+	Auth             *auth2.Controller
+	User             *user2.Controller
 }
 
 func NewServer(spaPath string, clientOrigins []string, gormDb *gorm.DB) *Server {
@@ -74,9 +76,16 @@ func (s *Server) StartServer() {
 
 	// SPA ROUTE
 	// Only loaded if SPAPath is defined.
-	log.Debug().Str("spaPath", s.SPAPath).Msg("SPA_PATH is set, will serve")
 	if s.SPAPath != "" {
-		router.Use(static.Serve("/", static.LocalFile(s.SPAPath, true)))
+		log.Debug().Str("spaPath", s.SPAPath).Msg("SPA_PATH is set, will serve")
+
+		spaRoute := static.Serve("/", static.LocalFile(s.SPAPath, true))
+
+		if s.SPACacheDisabled {
+			router.Use(middleware.NoCache()).Use(spaRoute)
+		} else {
+			router.Use(spaRoute)
+		}
 	}
 
 	// Uncomment below to enable prometheus metrics
