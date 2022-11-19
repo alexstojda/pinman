@@ -51,5 +51,5 @@ USER golang:root
 EXPOSE 8080
 
 ENV SPA_PATH=/app/html
-ENTRYPOINT ["/app/bin"]
-CMD ["pinman"]
+WORKDIR "/app/bin"
+ENTRYPOINT ["pinman"]
