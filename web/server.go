@@ -9,9 +9,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"pinman/web/api/auth"
-	"pinman/web/api/health"
 	"pinman/web/api/hello"
 	"pinman/web/api/user"
+	"pinman/web/health"
 )
 
 type Server struct {
