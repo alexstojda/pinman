@@ -12,7 +12,8 @@ type Config struct {
 	DBName         string `mapstructure:"POSTGRES_DB"`
 	DBPort         string `mapstructure:"POSTGRES_PORT"`
 
-	SPAPath string `mapstructure:"SPA_PATH"`
+	SPAPath       string   `mapstructure:"SPA_PATH"`
+	ClientOrigins []string `mapstructure:"CLIENT_ORIGINS"`
 
 	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 	AccessTokenPublicKey   string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY"`
@@ -26,6 +27,7 @@ type Config struct {
 
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)
+	viper.SetTypeByDefaultValue(true)
 	viper.SetConfigType("env")
 	viper.SetConfigFile(".env.local")
 

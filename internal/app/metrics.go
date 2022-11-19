@@ -1,4 +1,4 @@
-package web
+package app
 
 import (
 	"fmt"
@@ -18,6 +18,8 @@ import (
 //
 // Example: If the application has a route with a parameter called 'name', like '/api/function/:name',
 // add `"name"` to `paramNames`
+//
+//goland:noinspection GoUnusedExportedFunction
 func ConfigurePrometheus(router *gin.Engine, paramNames []string) {
 	prometheus := ginprometheus.NewPrometheus("gin")
 

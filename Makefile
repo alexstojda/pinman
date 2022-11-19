@@ -1,34 +1,39 @@
+FRONTEND_DIR = './web/app'
+
 setup: mod yarn env-local
 
-env-local:
-	cp .env .env.local
+env-local: keys-dev
+	@cp .env .env.local
 
 yarn:
-	yarn
+	@cd $(FRONTEND_DIR) &&	yarn
 
 mod:
-	go mod download
+	@go mod download
 
 build: build-backend build-frontend
 
 build-backend:
-	mkdir -p ./build
-	go build -v -o ./build/pinman ./cmd/pinman/
+	@mkdir -p ./build
+	@go build -v -o ./build/pinman ./cmd/pinman/
 
 build-frontend:
-	yarn build
+	@cd $(FRONTEND_DIR) && yarn build
 
 run: build-frontend run-migrate
-	SPA_PATH=./build go run cmd/pinman/main.go
+	@go run cmd/pinman/main.go
 
 run-backend:
-	go run cmd/pinman/main.go
+	@go run cmd/pinman/main.go
 
-run-migrate:
-	go run cmd/migrate/main.go
+run-database:
+	@docker compose up -d postgres
+
+run-migrate: run-database
+	@go run cmd/migrate/main.go
 
 run-frontend:
-	REACT_APP_API_HOST=http://localhost:8080 yarn start
+	@cd $(FRONTEND_DIR) && REACT_APP_API_HOST=http://localhost:8080 yarn start
 
 test:
 	@go test ./...

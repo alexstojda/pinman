@@ -2,9 +2,8 @@ package main
 
 import (
 	"github.com/rs/zerolog/log"
+	"pinman/internal/app"
 	"pinman/internal/utils"
-
-	"pinman/web"
 )
 
 func main() {
@@ -18,6 +17,6 @@ func main() {
 		log.Fatal().Err(err).Msg("could not connect to DB")
 	}
 
-	server := web.NewServer(config.SPAPath, gormDb)
+	server := app.NewServer(config.SPAPath, config.ClientOrigins, gormDb)
 	server.StartServer()
 }

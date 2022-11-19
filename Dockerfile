@@ -2,9 +2,9 @@ FROM node:18-alpine AS node-dev
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-COPY package.json /usr/src/app
+COPY web/app/package.json /usr/src/app
 RUN yarn
-COPY . /usr/src/app
+COPY web/app/ /usr/src/app
 RUN yarn build
 
 ENTRYPOINT ["npm"]

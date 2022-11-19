@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"pinman/web/middleware"
+	"pinman/internal/app/middleware"
 )
 
 type RouteController struct {
