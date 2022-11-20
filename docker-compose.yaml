@@ -39,6 +39,21 @@ services:
     ports:
       - "8080"
 
+  ## Code generation
+  openapi-client:
+    image: openapitools/openapi-generator-cli
+    volumes:
+      - ./web/app/src/generated:/out
+      - ./api:/api
+    command:
+    - generate
+    - -i
+    - /api/openapi.yaml
+    - -g
+    - typescript-axios
+    - -o
+    - /out
+
   ### Dependencies
   postgres:
     image: postgres

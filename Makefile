@@ -2,7 +2,9 @@ FRONTEND_DIR = './web/app'
 
 setup: mod yarn env-local
 
-env-local: keys-dev
+env: env-local keys-dev
+
+env-local:
 	@cp .env .env.local
 
 yarn:

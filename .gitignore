@@ -38,4 +38,5 @@ coverage
 **/yarn-debug.log*
 **/yarn-error.log*
 
-/internal/app/generated
+/internal/app/generated/
+/web/app/src/generated/
