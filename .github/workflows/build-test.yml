@@ -70,7 +70,19 @@ jobs:
           git-user-email: actions@github.com
           fallback-version: 0.0.0
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-commit: false
           git-push: false
+
+      - name: Set foobar to cool
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: mikefarah/yq@v4.30.4
+        with:
+          cmd: yq -i '.info.version = "${{ steps.changelog.outputs.version }}"' 'api/openapi.yaml'
+
+      - name: Commit release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        run: |
+          git commit -m "chore(release): ${{ steps.changelog.outputs.tag }} [skip ci]"
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -80,7 +92,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            type=semver,pattern={{version}},value=${{ steps.semver.outputs.tag }}
+            type=semver,pattern={{version}},value=${{ steps.changelog.outputs.tag }}
       #          type=ref,event=branch
       #          type=ref,event=pr
 
