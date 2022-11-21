@@ -17,9 +17,10 @@ clean:
 	@rm -rf $(FRONTEND_DIR)/build
 
 generate:
-	go install "github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.2"
-	mkdir -p ./internal/app/generated
-	oapi-codegen -config ./api/oapi-codegen.config.yaml ./api/openapi.yaml
+	@docker compose up --build -d openapi-server openapi-client
+	docker compose cp openapi-server:/out/ internal/app/generated
+	docker compose cp openapi-client:/out/ web/app/src/generated
+	@docker compose stop openapi-server openapi-client
 
 build: build-backend build-frontend
 
@@ -31,7 +32,7 @@ build-frontend:
 	@cd $(FRONTEND_DIR) && yarn build
 
 run: clean build-frontend run-migrate
-	@go run cmd/pinman/main.go
+	@SPA_PATH=./web/app/build go run cmd/pinman/main.go
 
 run-backend:
 	@go run cmd/pinman/main.go

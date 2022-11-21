@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import logo from '@pinman/resources/logo.svg';
-import apiUrl from '@pinman/helpers/apiUrl';
+import logo from '../resources/logo.svg';
+import apiUrl from '../helpers/apiUrl';
 import './App.css';
 import axios from 'axios';
 

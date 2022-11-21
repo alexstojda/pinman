@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/spf13/viper"
+	"os"
 	"time"
 )
 
@@ -30,7 +31,11 @@ func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)
 	viper.SetTypeByDefaultValue(true)
 	viper.SetConfigType("env")
-	viper.SetConfigFile(".env.local")
+	if envFile := os.Getenv("ENV_FILE"); envFile != "" {
+		viper.SetConfigFile(envFile)
+	} else {
+		viper.SetConfigFile(".env")
+	}
 
 	viper.AutomaticEnv()
 
