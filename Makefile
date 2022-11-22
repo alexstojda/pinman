@@ -34,7 +34,7 @@ build-frontend:
 run: clean build-frontend run-migrate
 	@SPA_PATH=./web/app/build go run cmd/pinman/main.go
 
-run-backend:
+run-backend: run-migrate
 	@go run cmd/pinman/main.go
 
 run-database:
