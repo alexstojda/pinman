@@ -4,16 +4,19 @@ import './index.css';
 import App from './pages/App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {ColorModeProvider} from "@chakra-ui/react";
+import {ChakraProvider, ColorModeScript} from "@chakra-ui/react";
+import Login from "./pages/Login";
+import theme from "./theme"
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <ColorModeProvider>
+    <ChakraProvider>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <Router/>
-    </ColorModeProvider>
+    </ChakraProvider>
   </React.StrictMode>
 );
 
@@ -22,6 +25,7 @@ function Router() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App/>}/>
+        <Route path={"/login"} element={<Login/>}/>
       </Routes>
     </BrowserRouter>
   )
