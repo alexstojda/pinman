@@ -15,7 +15,7 @@ import (
 func AuthenticateUser(db *gorm.DB) generated.MiddlewareFunc {
 	return func(ctx *gin.Context) {
 		// If scopes are not set, this route does not require authentication.
-		if _, exists := ctx.Get(generated.OauthScopes); !exists {
+		if _, exists := ctx.Get(generated.PinmanAuthScopes); !exists {
 			return
 		}
 

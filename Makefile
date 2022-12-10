@@ -18,8 +18,9 @@ clean:
 
 generate:
 	@docker compose up --build -d openapi-server openapi-client
-	docker compose cp openapi-server:/out/ internal/app/generated
-	docker compose cp openapi-client:/out/ web/app/src/generated
+	@rm -rf internal/app/generated web/app/src/api/generated && true
+	docker compose cp openapi-server:/out internal/app/generated
+	docker compose cp openapi-client:/out web/app/src/api/generated
 	@docker compose stop openapi-server openapi-client
 
 build: build-backend build-frontend
@@ -31,7 +32,7 @@ build-backend:
 build-frontend:
 	@cd $(FRONTEND_DIR) && yarn build
 
-run: clean build-frontend run-migrate
+run: clean generate build-frontend run-migrate
 	@SPA_PATH=./web/app/build go run cmd/pinman/main.go
 
 run-backend: run-migrate

@@ -39,4 +39,4 @@ coverage
 **/yarn-error.log*
 
 /internal/app/generated/
-/web/app/src/generated/
+/web/app/src/api/generated/

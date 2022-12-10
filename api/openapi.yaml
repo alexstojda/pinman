@@ -4,7 +4,7 @@ info:
   title: PinMan - Pinball League Management
   version: 0.1.0
 servers:
-- url: /
+- url: http://localhost:8080/api
 paths:
   /auth/register:
     post:
@@ -14,7 +14,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/userRegister'
-        required: false
+        required: true
       responses:
         "200":
           content:
@@ -54,9 +54,6 @@ paths:
   /auth/refresh:
     post:
       description: Refresh an access token
-      security:
-        - oauth:
-            - user
       responses:
         "200":
           content:
@@ -76,7 +73,7 @@ paths:
     post:
       description: Retrieve profile information of the currently authenticated user
       security:
-        - oauth:
+        - pinmanAuth:
             - user
       responses:
         "200":
@@ -179,7 +176,7 @@ components:
         access_token:
           type: string
   securitySchemes:
-    accessCode:
+    pinmanAuth:
       flows:
         authorizationCode:
           authorizationUrl: /auth/login
