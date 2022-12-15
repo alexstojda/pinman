@@ -2,25 +2,31 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"pinman/internal/app/api/auth"
 	"pinman/internal/app/api/user"
 )
 
+type AuthHandlers struct {
+	Login   gin.HandlerFunc
+	Refresh gin.HandlerFunc
+}
+
+// Server
+// implements generated.ServerInterface
 type Server struct {
-	Auth *auth.Controller
 	User *user.Controller
+	AuthHandlers
 }
 
 func (s *Server) PostAuthLogin(c *gin.Context) {
-	s.Auth.SignInUser(c)
+	s.AuthHandlers.Login(c)
 }
 
-func (s *Server) PostAuthRefresh(c *gin.Context) {
-	s.Auth.RefreshAccessToken(c)
+func (s *Server) GetAuthRefresh(c *gin.Context) {
+	s.AuthHandlers.Refresh(c)
 }
 
-func (s *Server) PostAuthRegister(c *gin.Context) {
-	s.Auth.SignUpUser(c)
+func (s *Server) PostUsersRegister(c *gin.Context) {
+	s.User.SignUpUser(c)
 }
 
 func (s *Server) PostUsersMe(c *gin.Context) {

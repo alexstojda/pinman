@@ -4,9 +4,9 @@ info:
   title: PinMan - Pinball League Management
   version: 0.1.0
 servers:
-- url: http://localhost:8080/api
+  - url: http://localhost:8080/api
 paths:
-  /auth/register:
+  /users/register:
     post:
       description: Registers a new user account
       requestBody:
@@ -25,7 +25,7 @@ paths:
         "400":
           description: request was malformed
       tags:
-      - auth
+        - users
   /auth/login:
     post:
       description: Retrieve an access and refresh token to authenticate requests to
@@ -39,9 +39,12 @@ paths:
       responses:
         "200":
           content:
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
             application/json:
               schema:
-                $ref: '#/components/schemas/loginResponse'
+                $ref: '#/components/schemas/tokenResponse'
           description: User was registered authenticated
         "400":
           description: request was malformed
@@ -50,16 +53,21 @@ paths:
         "403":
           description: forbidden access for a lack of sufficient privileges
       tags:
-      - auth
+        - auth
   /auth/refresh:
-    post:
+    get:
       description: Refresh an access token
+      security:
+        - pinmanAuth: []
       responses:
         "200":
           content:
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
             application/json:
               schema:
-                $ref: '#/components/schemas/refreshTokenResponse'
+                $ref: '#/components/schemas/tokenResponse'
           description: Token successfully refreshed
         "400":
           description: request was malformed
@@ -68,7 +76,7 @@ paths:
         "403":
           description: forbidden access for a lack of sufficient privileges
       tags:
-      - auth
+        - auth
   /users/me:
     post:
       description: Retrieve profile information of the currently authenticated user
@@ -89,7 +97,7 @@ paths:
         "403":
           description: forbidden access for a lack of sufficient privileges
       tags:
-      - user
+        - users
 components:
   responses:
     unauthorized:
@@ -134,7 +142,7 @@ components:
       type: object
     userLogin:
       properties:
-        email:
+        username:
           type: string
         password:
           type: string
@@ -159,29 +167,23 @@ components:
         user:
           $ref: '#/components/schemas/user'
       type: object
-    loginResponse:
+    tokenResponse:
       example:
+        expire: 2022-12-15T17:41:57-05:00
         access_token: access_token
-        refresh_token: refresh_token
       properties:
-        access_token:
+        expire:
           type: string
-        refresh_token:
+        access_token:
           type: string
       type: object
-    refreshTokenResponse:
-      example:
-        access_token: access_token
-      properties:
-        access_token:
-          type: string
   securitySchemes:
     pinmanAuth:
       flows:
-        authorizationCode:
-          authorizationUrl: /auth/login
+        implicit:
+          authorizationUrl: /api/auth/login
+          refreshUrl: /api/auth/refresh
           scopes:
             user: allows interacting with the system as a registered user
             admin: allows reading resources
-          tokenUrl: /auth/refresh
       type: oauth2

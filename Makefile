@@ -17,10 +17,10 @@ clean:
 	@rm -rf $(FRONTEND_DIR)/build
 
 generate:
-	@docker compose up --build -d openapi-server openapi-client
+	@docker compose up --remove-orphans --build -d openapi-server openapi-client
 	@rm -rf internal/app/generated web/app/src/api/generated && true
-	docker compose cp openapi-server:/out internal/app/generated
-	docker compose cp openapi-client:/out web/app/src/api/generated
+	@docker compose cp openapi-server:/out internal/app/generated
+	@docker compose cp openapi-client:/out web/app/src/api/generated
 	@docker compose stop openapi-server openapi-client
 
 build: build-backend build-frontend

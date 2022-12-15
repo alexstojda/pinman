@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 	"pinman/internal/app/api"
 	"pinman/internal/app/api/auth"
+	"pinman/internal/app/api/errors"
 	"pinman/internal/app/api/hello"
 	"pinman/internal/app/api/user"
 	"pinman/internal/app/generated"
@@ -24,7 +25,6 @@ type Server struct {
 	Db               *gorm.DB
 	Health           *health.Health
 	Hello            *hello.Hello
-	ApiServer        generated.ServerInterface
 }
 
 func NewServer(spaPath string, clientOrigins []string, db *gorm.DB) *Server {
@@ -33,10 +33,7 @@ func NewServer(spaPath string, clientOrigins []string, db *gorm.DB) *Server {
 		SPAPath:       spaPath,
 		Health:        health.NewHealth(),
 		Hello:         hello.NewHello(),
-		ApiServer: &api.Server{
-			Auth: auth.NewController(db),
-			User: user.NewController(db),
-		},
+		Db:            db,
 	}
 }
 
@@ -66,13 +63,33 @@ func (s *Server) StartServer() {
 		},
 	}))
 
-	generated.RegisterHandlersWithOptions(router, s.ApiServer, generated.GinServerOptions{
-		BaseURL: "/api",
-		Middlewares: []generated.MiddlewareFunc{
-			middleware.AuthenticateUser(s.Db),
-		},
-		ErrorHandler: nil,
+	authMiddleware, err := auth.CreateJWTMiddleware(s.Db)
+
+	router.NoRoute(authMiddleware.MiddlewareFunc(), func(c *gin.Context) {
+		errors.AbortWithError(404, "page not found", c)
+		return
 	})
+
+	generated.RegisterHandlersWithOptions(
+		router,
+		&api.Server{
+			User: user.NewController(s.Db),
+			AuthHandlers: api.AuthHandlers{
+				Login:   authMiddleware.LoginHandler,
+				Refresh: authMiddleware.RefreshHandler,
+			},
+		},
+		generated.GinServerOptions{
+			BaseURL: "/api",
+			Middlewares: []generated.MiddlewareFunc{
+				func(c *gin.Context) {
+					if _, ok := c.Get(generated.PinmanAuthScopes); ok {
+						authMiddleware.MiddlewareFunc()(c)
+					}
+				},
+			},
+			ErrorHandler: nil,
+		})
 
 	router.GET("/api/health", s.Health.Get)
 	router.GET("/api/hello", s.Hello.Get)
