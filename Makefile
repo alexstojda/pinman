@@ -47,7 +47,12 @@ run-migrate: run-database
 run-frontend:
 	@cd $(FRONTEND_DIR) && REACT_APP_API_HOST=http://localhost:8080 yarn start
 
-test:
+test: test-backend test-frontend
+
+test-frontend:
+	@cd $(FRONTEND_DIR) && yarn test
+
+test-backend:
 	@go test ./...
 
 keys-dev:

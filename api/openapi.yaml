@@ -212,8 +212,8 @@ components:
     pinmanAuth:
       flows:
         password:
-          tokenUrl: {{baseUrl}}/auth/login
-          refreshUrl: {{baseUrl}}/auth/refresh
+          tokenUrl: "{{baseUrl}}/auth/login"
+          refreshUrl: "{{baseUrl}}/auth/refresh"
           scopes:
             user: allows interacting with the system as a registered user
             admin: allows reading resources

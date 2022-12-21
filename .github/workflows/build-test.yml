@@ -27,17 +27,20 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           # File containing the version Spec of the version to use.  Examples: .nvmrc, .node-version, .tool-versions.
-          node-version-file: .nvmrc
+          node-version-file: web/app/.nvmrc
           # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
           cache: yarn
+          cache-dependency-path: web/app/yarn.lock
       - uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
       - name: Setup dependencies
         run: make setup
+      - name: Generate code from spec
+        run: make generate
       - name: Run frontend tests
-        run: yarn test
+        run: make test-frontend
       - name: Run backend tests
-        run: go test ./...
+        run: make test-backend
       - name: Build Docker image
         uses: docker/build-push-action@v3.2.0
         with:
