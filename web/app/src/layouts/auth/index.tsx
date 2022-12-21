@@ -4,10 +4,13 @@ import ColorToggle from "../../components/ColorToggle";
 
 type AuthLayoutProps = PropsWithChildren & {
   title?: string;
-  error?: {
-    title: string;
-    detail: string;
-  }
+  alert?: AlertData
+}
+
+export type AlertData = {
+  status: 'error' | 'success';
+  title: string;
+  detail: string;
 }
 
 export default function AuthLayout(props: AuthLayoutProps) {
@@ -31,11 +34,11 @@ export default function AuthLayout(props: AuthLayoutProps) {
           <Heading>{props.title}</Heading>
         }
 
-        {props.error &&
-          <Alert status='error'>
+        {props.alert &&
+          <Alert status={props.alert.status}>
             <AlertIcon/>
-            <AlertTitle>{props.error.title}</AlertTitle>
-            <AlertDescription>{props.error.detail}</AlertDescription>
+            <AlertTitle>{props.alert.title}</AlertTitle>
+            <AlertDescription>{props.alert.detail}</AlertDescription>
           </Alert>
         }
 

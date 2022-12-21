@@ -8,6 +8,7 @@ import {ChakraProvider, ColorModeScript} from "@chakra-ui/react";
 import Login from "./pages/Login";
 import theme from "./theme"
 import AuthTest from "./pages/AuthTest";
+import SignUpPage from "./pages/SignUp";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -27,6 +28,7 @@ function Router() {
       <Routes>
         <Route path="/" element={<App/>}/>
         <Route path={"/login"} element={<Login/>}/>
+        <Route path={"/signup"} element={<SignUpPage/>}/>
         <Route path={"/authenticated"} element={<AuthTest/>}/>
       </Routes>
     </BrowserRouter>
