@@ -62,20 +62,20 @@ func CreateJWTMiddleware(db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
 					return nil, err
 				}
 			} else if ctx.ContentType() == "application/x-www-form-urlencoded" {
-				payload.Username = utils.PtrString(ctx.PostForm("username"))
-				payload.Password = utils.PtrString(ctx.PostForm("password"))
+				payload.Username = ctx.PostForm("username")
+				payload.Password = ctx.PostForm("password")
 			} else {
 				errors.AbortWithError(http.StatusBadRequest, "content-type not supported", ctx)
 			}
 
 			user := &models.User{}
-			result := db.First(user, "email = ?", strings.ToLower(*payload.Username))
+			result := db.First(user, "email = ?", strings.ToLower(payload.Username))
 			if result.Error != nil {
 				log.Err(result.Error).Msg("failed to authenticate user - database query failed")
 				return nil, jwt.ErrFailedAuthentication
 			}
 
-			if err := utils.VerifyPassword(user.Password, *payload.Password); err != nil {
+			if err := utils.VerifyPassword(user.Password, payload.Password); err != nil {
 				log.Err(jwt.ErrFailedAuthentication).Str("userId", user.ID.String()).Msg("invalid password")
 				return nil, jwt.ErrFailedAuthentication
 			}
@@ -97,14 +97,14 @@ func CreateJWTMiddleware(db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
 			c.JSON(http.StatusOK, generated.TokenResponse{
-				AccessToken: utils.PtrString(token),
-				Expire:      utils.PtrString(expire.Format(time.RFC3339)),
+				AccessToken: token,
+				Expire:      expire.Format(time.RFC3339),
 			})
 		},
 		RefreshResponse: func(c *gin.Context, code int, token string, expire time.Time) {
 			c.JSON(http.StatusOK, generated.TokenResponse{
-				AccessToken: utils.PtrString(token),
-				Expire:      utils.PtrString(expire.Format(time.RFC3339)),
+				AccessToken: token,
+				Expire:      expire.Format(time.RFC3339),
 			})
 		},
 		// TokenLookup is a string in the form of "<source>:<name>" that is used
@@ -115,7 +115,7 @@ func CreateJWTMiddleware(db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
 		// - "query:<name>"
 		// - "cookie:<name>"
 		// - "param:<name>"
-		TokenLookup: "header: Authorization",
+		TokenLookup: "header:Authorization",
 		// TokenLookup: "query:token",
 		// TokenLookup: "cookie:token",
 

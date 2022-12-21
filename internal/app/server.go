@@ -47,7 +47,17 @@ func (s *Server) StartServer() {
 
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = s.ClientOrigins
+	if len(corsConfig.AllowOrigins) > 0 {
+		log.Info().Interface("allowedOrigins", corsConfig.AllowOrigins).Msg("CORS origins configured")
+	}
 	corsConfig.AllowCredentials = true
+	corsConfig.AllowHeaders = append(
+		corsConfig.AllowHeaders,
+		[]string{
+			"Authorization",
+		}...,
+	)
+
 	router.Use(cors.New(corsConfig))
 
 	// Since we don't use any proxy, this feature can be disabled

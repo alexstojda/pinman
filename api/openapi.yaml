@@ -23,7 +23,7 @@ paths:
                 $ref: '#/components/schemas/userResponse'
           description: User was registered successfully
         "400":
-          description: request was malformed
+          $ref: "#/components/responses/badRequest"
       tags:
         - users
   /auth/login:
@@ -47,11 +47,11 @@ paths:
                 $ref: '#/components/schemas/tokenResponse'
           description: User was registered authenticated
         "400":
-          description: request was malformed
+          $ref: "#/components/responses/badRequest"
         "401":
-          description: unauthorized access for a lack of authentication
+          $ref: "#/components/responses/unauthorized"
         "403":
-          description: forbidden access for a lack of sufficient privileges
+          $ref: "#/components/responses/forbidden"
       tags:
         - auth
   /auth/refresh:
@@ -70,15 +70,15 @@ paths:
                 $ref: '#/components/schemas/tokenResponse'
           description: Token successfully refreshed
         "400":
-          description: request was malformed
+          $ref: "#/components/responses/badRequest"
         "401":
-          description: unauthorized access for a lack of authentication
+          $ref: "#/components/responses/unauthorized"
         "403":
-          description: forbidden access for a lack of sufficient privileges
+          $ref: "#/components/responses/forbidden"
       tags:
         - auth
   /users/me:
-    post:
+    get:
       description: Retrieve profile information of the currently authenticated user
       security:
         - pinmanAuth:
@@ -91,21 +91,33 @@ paths:
                 $ref: '#/components/schemas/userResponse'
           description: Successful response
         "400":
-          description: request was malformed
+          $ref: "#/components/responses/badRequest"
         "401":
-          description: unauthorized access for a lack of authentication
+          $ref: "#/components/responses/unauthorized"
         "403":
-          description: forbidden access for a lack of sufficient privileges
+          $ref: "#/components/responses/forbidden"
       tags:
         - users
 components:
   responses:
     unauthorized:
       description: unauthorized access for a lack of authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
     forbidden:
       description: forbidden access for a lack of sufficient privileges
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
     badRequest:
       description: request was malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
   schemas:
     user:
       example:
@@ -140,6 +152,11 @@ components:
         passwordConfirm:
           type: string
       type: object
+      required:
+        - name
+        - email
+        - password
+        - passwordConfirm
     userLogin:
       properties:
         username:
@@ -147,9 +164,20 @@ components:
         password:
           type: string
       type: object
-    errorData:
+      required:
+        - username
+        - password
+    errorResponse:
+      required:
+        - status
+        - title
+        - detail
       properties:
-        error:
+        status:
+          type: integer
+        title:
+          type: string
+        detail:
           type: string
         meta:
           type: object
@@ -177,12 +205,15 @@ components:
         access_token:
           type: string
       type: object
+      required:
+        - expire
+        - access_token
   securitySchemes:
     pinmanAuth:
       flows:
-        implicit:
-          authorizationUrl: /api/auth/login
-          refreshUrl: /api/auth/refresh
+        password:
+          tokenUrl: {{baseUrl}}/auth/login
+          refreshUrl: {{baseUrl}}/auth/refresh
           scopes:
             user: allows interacting with the system as a registered user
             admin: allows reading resources

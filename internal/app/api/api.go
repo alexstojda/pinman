@@ -29,6 +29,6 @@ func (s *Server) PostUsersRegister(c *gin.Context) {
 	s.User.SignUpUser(c)
 }
 
-func (s *Server) PostUsersMe(c *gin.Context) {
+func (s *Server) GetUsersMe(c *gin.Context) {
 	s.User.GetMe(c)
 }
