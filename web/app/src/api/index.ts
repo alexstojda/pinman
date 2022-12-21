@@ -1,5 +1,5 @@
-import {AuthApi, Configuration, UserLogin, UsersApi} from "./generated";
-import axios, {AxiosInstance} from "axios";
+import {AuthApi, Configuration, UserLogin, UsersApi, ErrorResponse} from "./generated";
+import axios, {AxiosError, AxiosInstance} from "axios";
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_DEADLINE = 5 * 1000 * 60 // 5 minutes
@@ -80,8 +80,8 @@ export class Api {
         })
         return true
       }
-      console.error("login failed", r.config.data)
-      return false
+      console.error("Login failed", r.config.data)
+      throw new Error((r.config.data as ErrorResponse).detail)
     })
   }
 
@@ -107,6 +107,12 @@ export class Api {
   public authApi = () => {
     return new AuthApi(this.configuration());
   }
+
+  public parseError = (e: AxiosError): ErrorResponse => {
+    if (e.isAxiosError && e.response)
+      return e.response.data as ErrorResponse
+    throw new Error("parseError: could not parse error")
+}
 }
 
 export * from './generated'

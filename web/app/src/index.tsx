@@ -7,6 +7,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {ChakraProvider, ColorModeScript} from "@chakra-ui/react";
 import Login from "./pages/Login";
 import theme from "./theme"
+import AuthTest from "./pages/AuthTest";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -14,7 +15,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <ColorModeScript initialColorMode={theme.config.initialColorMode}/>
       <Router/>
     </ChakraProvider>
   </React.StrictMode>
@@ -26,6 +27,7 @@ function Router() {
       <Routes>
         <Route path="/" element={<App/>}/>
         <Route path={"/login"} element={<Login/>}/>
+        <Route path={"/authenticated"} element={<AuthTest/>}/>
       </Routes>
     </BrowserRouter>
   )

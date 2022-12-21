@@ -1,5 +1,6 @@
 import {
-  Alert, AlertDescription,
+  Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
   Avatar,
@@ -17,19 +18,32 @@ import {
 } from "@chakra-ui/react";
 import ColorToggle from "../../components/ColorToggle";
 import {AtSignIcon, LockIcon} from "@chakra-ui/icons";
-import {AuthApi, UserLogin} from "../../api/generated";
-import {ChangeEvent, useState} from "react";
+import {Api, UserLogin} from "../../api"
+import {ChangeEvent, FormEvent, useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../api/useAuth";
+import {AxiosError} from "axios";
+
+const api = new Api();
 
 export default function LoginPage() {
-  const authApi = new AuthApi();
+  const navigate = useNavigate();
 
-  const [loginData, setLoginData] = useState<UserLogin>({});
+  const [user] = useAuth({});
+
+  const [loginData, setLoginData] = useState<UserLogin>({username: "", password: ""});
   const [error, setError] = useState<string>()
+
+  useEffect(() => {
+    if (user) {
+      navigate("/authenticated")
+    }
+  }, [user, navigate])
 
   function onEmailChange(e: ChangeEvent<HTMLInputElement>) {
     setLoginData({
       ...loginData,
-      email: e.target.value
+      username: e.target.value
     })
   }
 
@@ -37,6 +51,18 @@ export default function LoginPage() {
     setLoginData({
       ...loginData,
       password: e.target.value
+    })
+  }
+
+  function doLogin(event: FormEvent) {
+    setError(undefined)
+    event.preventDefault()
+    api.login(loginData).then(() => {
+        navigate("/authenticated");
+    }).catch((e: AxiosError) => {
+      const err = api.parseError(e)
+      console.error(err)
+      setError(`${err.title}: ${err.detail}`)
     })
   }
 
@@ -58,17 +84,7 @@ export default function LoginPage() {
         <Heading>Welcome</Heading>
 
         <Box minW={{base: "90%", md: "468px"}}>
-          <form onSubmit={(event) => {
-            setError(undefined)
-            console.log(loginData)
-            authApi.authLoginPost(loginData).then((result) => {
-              // Do something
-            }).catch((result) => {
-              console.log(result)
-              setError(result.response.data.message)
-            })
-            event.preventDefault()
-          }}>
+          <form onSubmit={doLogin}>
             <Stack
               spacing={4}
               p="1rem"
