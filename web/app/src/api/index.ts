@@ -1,21 +1,97 @@
-import {Configuration, UserApi} from "./generated";
-import {Cookies} from "react-cookie";
-import axios, {Axios, AxiosInstance} from "axios";
+import {AuthApi, Configuration, UserLogin, UsersApi} from "./generated";
+import axios, {AxiosInstance} from "axios";
 
-const ACCESS_TOKEN_COOKIE = 'access_token';
-const REFRESH_TOKEN_COOKIE = 'refresh_token';
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_DEADLINE = 5 * 1000 * 60 // 5 minutes
 
-class MyApi {
-  private cookies: Cookies;
+type Token = {
+  token: string
+  expires: Date
+}
+
+export class Api {
   private axiosInstance: AxiosInstance;
 
   constructor() {
     this.axiosInstance = axios.create()
-    this.cookies = new Cookies();
   }
 
-  private accessToken = (name?: string, scopes?: string[]) => {
-    return this.cookies.get(ACCESS_TOKEN_COOKIE);
+  // Retrieve the Token from local storage
+  private getJwtToken(): Token | undefined {
+    const tokenStr = localStorage.getItem(ACCESS_TOKEN_KEY)
+    if (tokenStr) {
+      return JSON.parse(tokenStr, (k, v) => {
+        if (k === "expires") {
+          return new Date(Date.parse(v))
+        }
+        return v;
+      })
+    }
+    return undefined
+  }
+
+  // Save the Token to local storage
+  public setJwtToken(token: Token) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(token))
+  }
+
+  public clearJwtToken() {
+    localStorage.removeItem(ACCESS_TOKEN_KEY)
+  }
+
+  // Tries to refresh the token. Returns true if successful or token is still valid, false otherwise.
+  public async tryTokenRefresh(): Promise<boolean> {
+    const token = this.getJwtToken()
+    if (token) {
+
+      if (token.expires.getTime() < new Date(Date.now()).getTime())
+        return false
+
+      // If the token will expire in longer than REFRESH_TOKEN, we should refresh
+      if (token.expires.getTime() - new Date(Date.now()).getTime() > REFRESH_DEADLINE) {
+        return true
+      }
+
+      return await this.authApi().authRefreshGet().then(r => {
+        if (r.status === 200) {
+          this.setJwtToken({
+            token: r.data.access_token,
+            //TODO: UTC Date?
+            expires: new Date(Date.parse(r.data.expire))
+          })
+          return true
+        } else {
+          console.error("refresh failed", r.config.data)
+          return false
+        }
+      })
+    }
+
+    return false
+  }
+
+  public login(credentials: UserLogin): Promise<boolean> {
+    return this.authApi().authLoginPost(credentials).then<boolean>(r => {
+      if (r.status === 200) {
+        this.setJwtToken({
+          token: r.data.access_token,
+          //TODO: UTC Date?
+          expires: new Date(Date.parse(r.data.expire))
+        })
+        return true
+      }
+      console.error("login failed", r.config.data)
+      return false
+    })
+  }
+
+  // Method used by the generated API client to get the access_token.
+  private accessToken = (): string => {
+    const token = this.getJwtToken()
+    if (token && token.expires > new Date()) {
+      return token.token
+    }
+    return "";
   };
 
   private configuration = () => {
@@ -25,6 +101,12 @@ class MyApi {
   };
 
   public userApi = () => {
-    return new UserApi(this.configuration());
+    return new UsersApi(this.configuration());
   };
+
+  public authApi = () => {
+    return new AuthApi(this.configuration());
+  }
 }
+
+export * from './generated'
