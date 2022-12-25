@@ -24,7 +24,10 @@ func NewController(DB *gorm.DB) *Controller {
 }
 
 func (c *Controller) GetMe(ctx *gin.Context) {
-	currentUser := auth.GetUser(ctx)
+	currentUser, err := auth.GetUser(ctx)
+	if err != nil {
+		errors.AbortWithError(http.StatusForbidden, err.Error(), ctx)
+	}
 
 	ctx.JSON(http.StatusOK, generated.UserResponse{
 		User: &generated.User{
@@ -70,13 +73,15 @@ func (c *Controller) SignUpUser(ctx *gin.Context) {
 
 	result := c.DB.Create(&newUser)
 
-	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
-		errors.AbortWithError(http.StatusConflict, "user with that email already exists", ctx)
-		return
-	} else if result.Error != nil {
-		log.Err(result.Error).Msg("failed to create user")
-		errors.AbortWithError(http.StatusInternalServerError, "failed to create user", ctx)
-		return
+	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
+			errors.AbortWithError(http.StatusConflict, "user with that email already exists", ctx)
+			return
+		} else {
+			log.Err(result.Error).Msg("failed to create user")
+			errors.AbortWithError(http.StatusInternalServerError, "failed to create user", ctx)
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusCreated, generated.UserResponse{

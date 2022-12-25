@@ -11,6 +11,7 @@ import (
 	"pinman/internal/app/generated"
 	"pinman/internal/models"
 	"pinman/internal/utils"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -133,6 +134,11 @@ func CreateJWTMiddleware(db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
 	return authMiddleware, nil
 }
 
-func GetUser(ctx *gin.Context) *models.User {
-	return ctx.MustGet(IdentityKey).(*models.User)
+func GetUser(ctx *gin.Context) (*models.User, error) {
+	user, ok := ctx.Get(IdentityKey)
+	if !ok && reflect.TypeOf(user).AssignableTo(reflect.TypeOf(&models.User{})) {
+		return nil, fmt.Errorf("user obj not populated in ctx")
+	}
+
+	return user.(*models.User), nil
 }
