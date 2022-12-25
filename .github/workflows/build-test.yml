@@ -37,6 +37,8 @@ jobs:
         run: make setup
       - name: Generate code from spec
         run: make generate
+      - name: Run go vet
+        run: go vet ./...
       - name: Run frontend tests
         run: make test-frontend
       - name: Run backend tests
