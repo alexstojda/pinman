@@ -38,11 +38,15 @@ FROM golang:1.19-alpine AS go-base
 #######
 FROM go-base AS go-gen
 
+RUN apk add sed
+
 RUN go install "github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.2"
 RUN mkdir -p /out
+COPY scripts /scripts
 
 COPY api /api
 RUN /go/bin/oapi-codegen -config /api/oapi-codegen.config.yaml /api/openapi.yaml > /out/openapi.gen.go
+RUN /scripts/patch-generated-backend.sh /out/openapi.gen.go
 
 #######
 # Build API Server
