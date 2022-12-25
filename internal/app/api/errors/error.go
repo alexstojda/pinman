@@ -8,7 +8,7 @@ import (
 
 func AbortWithError(code int, detail string, ctx *gin.Context, meta ...map[string]interface{}) {
 	var metaVar *map[string]interface{}
-	if len(meta) > 1 {
+	if len(meta) >= 1 {
 		metaVar = &meta[0]
 	}
 
