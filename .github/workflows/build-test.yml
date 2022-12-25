@@ -76,7 +76,7 @@ jobs:
           skip-commit: false
           git-push: false
 
-      - name: Set foobar to cool
+      - name: Update version field in OAPI spec file
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         uses: mikefarah/yq@v4.30.4
         with:

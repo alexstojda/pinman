@@ -28,20 +28,20 @@ func (c *Controller) GetMe(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, generated.UserResponse{
 		User: &generated.User{
-			Id:        utils.PtrString(currentUser.ID.String()),
-			Name:      utils.PtrString(currentUser.Name),
-			Email:     utils.PtrString(currentUser.Email),
-			Role:      utils.PtrString(currentUser.Role),
-			CreatedAt: utils.PtrString(utils.FormatTime(currentUser.CreatedAt)),
-			UpdatedAt: utils.PtrString(utils.FormatTime(currentUser.UpdatedAt)),
+			Id:        currentUser.ID.String(),
+			Name:      currentUser.Name,
+			Email:     currentUser.Email,
+			Role:      currentUser.Role,
+			CreatedAt: utils.FormatTime(currentUser.CreatedAt),
+			UpdatedAt: utils.FormatTime(currentUser.UpdatedAt),
 		},
 	})
 }
 
 func (c *Controller) SignUpUser(ctx *gin.Context) {
-	var payload models.SignUpInput
+	payload := &generated.UserRegister{}
 
-	if err := ctx.ShouldBindJSON(&payload); err != nil {
+	if err := ctx.ShouldBindJSON(payload); err != nil {
 		errors.AbortWithError(http.StatusBadRequest, err.Error(), ctx)
 		return
 	}
@@ -81,12 +81,12 @@ func (c *Controller) SignUpUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, generated.UserResponse{
 		User: &generated.User{
-			Id:        utils.PtrString(newUser.ID.String()),
-			Name:      utils.PtrString(newUser.Name),
-			Email:     utils.PtrString(newUser.Email),
-			Role:      utils.PtrString(newUser.Role),
-			CreatedAt: utils.PtrString(utils.FormatTime(newUser.CreatedAt)),
-			UpdatedAt: utils.PtrString(utils.FormatTime(newUser.UpdatedAt)),
+			Id:        newUser.ID.String(),
+			Name:      newUser.Name,
+			Email:     newUser.Email,
+			Role:      newUser.Role,
+			CreatedAt: utils.FormatTime(newUser.CreatedAt),
+			UpdatedAt: utils.FormatTime(newUser.UpdatedAt),
 		},
 	})
 }

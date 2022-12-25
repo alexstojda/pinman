@@ -130,27 +130,54 @@ components:
       properties:
         id:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
         name:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
         email:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required,email
         role:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
         created_at:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
         updated_at:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
       type: object
+      required:
+        - id
+        - name
+        - email
+        - role
+        - created_at
+        - updated_at
     userRegister:
       properties:
         name:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
         email:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required,email
         password:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required,min=8
         passwordConfirm:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
       type: object
       required:
         - name
@@ -161,8 +188,12 @@ components:
       properties:
         username:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
         password:
           type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
       type: object
       required:
         - username
