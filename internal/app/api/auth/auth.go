@@ -20,14 +20,16 @@ const (
 	IdentityKey = "user"
 )
 
-func CreateJWTMiddleware(db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
+func CreateJWTMiddleware(config *utils.Config, db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "pinman",
-		Key:         []byte("secret key"),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
-		IdentityKey: IdentityKey,
+		Realm:        "pinman",
+		Key:          []byte(config.TokenSecretKey),
+		Timeout:      config.TokenExpiresAfter,
+		MaxRefresh:   config.TokenExpiresAfter,
+		PubKeyBytes:  []byte(config.TokenPublicKey),
+		PrivKeyBytes: []byte(config.TokenPrivateKey),
+		IdentityKey:  IdentityKey,
 		// Callback function that will be called during login.
 		// Using this function it is possible to add additional payload data to the webtoken.
 		// The data is then made available during requests via c.Get("JWT_PAYLOAD").

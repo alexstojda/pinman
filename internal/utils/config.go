@@ -17,17 +17,13 @@ type Config struct {
 	SPACacheDisabled bool     `mapstructure:"SPA_CACHE_DISABLED"`
 	ClientOrigins    []string `mapstructure:"CLIENT_ORIGINS"`
 
-	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
-	AccessTokenPublicKey   string        `mapstructure:"ACCESS_TOKEN_PUBLIC_KEY"`
-	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`
-	RefreshTokenPublicKey  string        `mapstructure:"REFRESH_TOKEN_PUBLIC_KEY"`
-	AccessTokenExpiresIn   time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRED_IN"`
-	RefreshTokenExpiresIn  time.Duration `mapstructure:"REFRESH_TOKEN_EXPIRED_IN"`
-	AccessTokenMaxAge      int           `mapstructure:"ACCESS_TOKEN_MAXAGE"`
-	RefreshTokenMaxAge     int           `mapstructure:"REFRESH_TOKEN_MAXAGE"`
+	TokenPrivateKey   string        `mapstructure:"TOKEN_PRIVATE_KEY"`
+	TokenPublicKey    string        `mapstructure:"TOKEN_PUBLIC_KEY"`
+	TokenExpiresAfter time.Duration `mapstructure:"TOKEN_EXPIRES_AFTER"`
+	TokenSecretKey    string        `mapstructure:"TOKEN_SECRET_KEY"`
 }
 
-func LoadConfig(path string) (config Config, err error) {
+func LoadConfig(path string) (*Config, error) {
 	viper.AddConfigPath(path)
 	viper.SetTypeByDefaultValue(true)
 	viper.SetConfigType("env")
@@ -39,11 +35,12 @@ func LoadConfig(path string) (config Config, err error) {
 
 	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	err = viper.Unmarshal(&config)
-	return
+	config := &Config{}
+	err = viper.Unmarshal(config)
+	return config, nil
 }

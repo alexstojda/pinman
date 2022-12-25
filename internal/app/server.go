@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-contrib/static"
@@ -16,28 +17,27 @@ import (
 	"pinman/internal/app/generated"
 	"pinman/internal/app/health"
 	"pinman/internal/app/middleware"
+	"pinman/internal/utils"
 )
 
 type Server struct {
-	ClientOrigins    []string
-	SPAPath          string
 	SPACacheDisabled bool
 	Db               *gorm.DB
 	Health           *health.Health
 	Hello            *hello.Hello
+	Config           *utils.Config
 }
 
-func NewServer(spaPath string, clientOrigins []string, db *gorm.DB) *Server {
+func NewServer(config *utils.Config, db *gorm.DB) *Server {
 	return &Server{
-		ClientOrigins: clientOrigins,
-		SPAPath:       spaPath,
-		Health:        health.NewHealth(),
-		Hello:         hello.NewHello(),
-		Db:            db,
+		Health: health.NewHealth(),
+		Hello:  hello.NewHello(),
+		Db:     db,
+		Config: config,
 	}
 }
 
-func (s *Server) StartServer() {
+func (s *Server) StartServer() error {
 	router := gin.New()
 
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -46,7 +46,7 @@ func (s *Server) StartServer() {
 	}
 
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = s.ClientOrigins
+	corsConfig.AllowOrigins = s.Config.ClientOrigins
 	if len(corsConfig.AllowOrigins) > 0 {
 		log.Info().Interface("allowedOrigins", corsConfig.AllowOrigins).Msg("CORS origins configured")
 	}
@@ -63,7 +63,7 @@ func (s *Server) StartServer() {
 	// Since we don't use any proxy, this feature can be disabled
 	err := router.SetTrustedProxies(nil)
 	if err != nil {
-		return
+		return fmt.Errorf("could not set trusted proxies: %v", err)
 	}
 
 	router.Use(logger.SetLogger(logger.Config{
@@ -73,7 +73,10 @@ func (s *Server) StartServer() {
 		},
 	}))
 
-	authMiddleware, err := auth.CreateJWTMiddleware(s.Db)
+	authMiddleware, err := auth.CreateJWTMiddleware(s.Config, s.Db)
+	if err != nil {
+		return fmt.Errorf("could not initialize JWT middleware: %v", err)
+	}
 
 	router.NoRoute(authMiddleware.MiddlewareFunc(), func(c *gin.Context) {
 		errors.AbortWithError(404, "page not found", c)
@@ -106,10 +109,10 @@ func (s *Server) StartServer() {
 
 	// SPA ROUTE
 	// Only loaded if SPAPath is defined.
-	if s.SPAPath != "" {
-		log.Debug().Str("spaPath", s.SPAPath).Msg("SPA_PATH is set, will serve")
+	if s.Config.SPAPath != "" {
+		log.Debug().Str("spaPath", s.Config.SPAPath).Msg("SPA_PATH is set, will serve")
 
-		spaRoute := static.Serve("/", static.LocalFile(s.SPAPath, true))
+		spaRoute := static.Serve("/", static.LocalFile(s.Config.SPAPath, true))
 
 		if s.SPACacheDisabled {
 			router.Use(middleware.NoCache()).Use(spaRoute)
@@ -121,8 +124,5 @@ func (s *Server) StartServer() {
 	// Uncomment below to enable prometheus metrics
 	//ConfigurePrometheus(router, []string{})
 
-	err = router.Run()
-	if err != nil {
-		log.Error().Msgf("Web server startup failed with error %s", err)
-	}
+	return router.Run()
 }
