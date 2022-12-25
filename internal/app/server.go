@@ -95,11 +95,7 @@ func (s *Server) StartServer() error {
 		generated.GinServerOptions{
 			BaseURL: "/api",
 			Middlewares: []generated.MiddlewareFunc{
-				func(c *gin.Context) {
-					if _, ok := c.Get(generated.PinmanAuthScopes); ok {
-						authMiddleware.MiddlewareFunc()(c)
-					}
-				},
+				auth.GetAuthMiddlewareFunc(authMiddleware),
 			},
 			ErrorHandler: nil,
 		})
