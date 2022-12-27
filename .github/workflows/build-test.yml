@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  install-and-test:
+  backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,6 +23,22 @@ jobs:
           cache: true
           # Used to specify the path to a dependency file - go.sum
           cache-dependency-path: go.sum
+      - name: Setup dependencies
+        run: make setup-backend env
+      - name: Generate code from spec
+        run: make generate-backend
+      - name: Run go vet
+        run: go vet ./...
+      - name: Run backend tests
+        run: make test-backend-cov
+      - uses: actions/upload-artifact@v2
+        with:
+          name: backend-reports
+          path: reports
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.5.1
         with:
@@ -31,30 +47,56 @@ jobs:
           # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
           cache: yarn
           cache-dependency-path: web/app/yarn.lock
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
       - name: Setup dependencies
-        run: make setup
+        run: make setup-frontend env
       - name: Generate code from spec
-        run: make generate
-      - name: Run go vet
-        run: go vet ./...
+        run: make generate-frontend
       - name: Run frontend tests
         run: make test-frontend
-      - name: Run backend tests
-        run: make test-backend-cov
+      - uses: actions/upload-artifact@v2
+        with:
+          name: frontend-reports
+          path: reports
+  docker:
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - backend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+      - name: Build Docker image
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+  sonar:
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - backend
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - uses: actions/download-artifact@v2
+        with:
+          name: frontend-reports
+          path: reports
+      - uses: actions/download-artifact@v2
+        with:
+          name: backend-reports
+          path: reports
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: Build Docker image
-        uses: docker/build-push-action@v3.2.0
-        with:
-          context: .
-
   publish:
-    needs: install-and-test
+    needs:
+      - sonar
+      - docker
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
