@@ -40,3 +40,4 @@ coverage
 
 /internal/app/generated/
 /web/app/src/api/generated/
+reports

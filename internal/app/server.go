@@ -12,10 +12,10 @@ import (
 	"pinman/internal/app/api"
 	"pinman/internal/app/api/auth"
 	"pinman/internal/app/api/errors"
+	"pinman/internal/app/api/health"
 	"pinman/internal/app/api/hello"
 	"pinman/internal/app/api/user"
 	"pinman/internal/app/generated"
-	"pinman/internal/app/health"
 	"pinman/internal/app/middleware"
 	"pinman/internal/utils"
 )

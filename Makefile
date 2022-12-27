@@ -49,11 +49,14 @@ run-frontend:
 
 test: test-backend test-frontend
 
+test-setup:
+	@go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+
 test-frontend:
 	@cd $(FRONTEND_DIR) && yarn test
 
-test-backend:
-	@go test ./...
+test-backend: test-setup
+	@ginkgo	./...
 
 keys-dev:
 	@echo "Generating key-pair for jwt tokens..."
@@ -62,9 +65,5 @@ keys-dev:
 	@sed -i '' -e "s/TOKEN_PUBLIC_KEY.*/TOKEN_PUBLIC_KEY=`cat ./token.pub | base64`/" "./.env.local"
 	@rm -r ./token ./token.pub
 
-#test-cov:
-#	mkdir -p coverage
-#	@go test -covermode=atomic -coverprofile=./coverage/coverage.txt ./...
-#	@go get github.com/axw/gocov/gocov
-#	@go get github.com/AlekSi/gocov-xml
-#	@gocov convert ./coverage/coverage.txt | gocov-xml > ./coverage/coverage.xml
+test-backend-cov: test-setup
+	@ginkgo --cover --race --json-report=report.json --output-dir=reports/go ./...

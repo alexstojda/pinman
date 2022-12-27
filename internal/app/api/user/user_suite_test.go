@@ -213,6 +213,7 @@ var _ = g.Describe("Controller", func() {
 				mock.ExpectQuery(regexp.QuoteMeta(sqlInsert)).
 					WithArgs(payload.Name, payload.Email, utils.AnyString{}, "user", true, utils.AnyTime{}, utils.AnyTime{}).
 					WillReturnError(fmt.Errorf("something bad happened"))
+				mock.ExpectRollback()
 
 				body, err := json.Marshal(payload)
 				m.Expect(err).To(m.BeNil())
