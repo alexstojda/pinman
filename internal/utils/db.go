@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"time"
 )
 
 func ConnectDB(config *Config, dialector ...gorm.Dialector) (*gorm.DB, error) {
@@ -31,4 +33,18 @@ func ConnectDB(config *Config, dialector ...gorm.Dialector) (*gorm.DB, error) {
 	}
 
 	return db, nil
+}
+
+type AnyTime struct{}
+
+func (a AnyTime) Match(v driver.Value) bool {
+	_, ok := v.(time.Time)
+	return ok
+}
+
+type AnyString struct{}
+
+func (a AnyString) Match(v driver.Value) bool {
+	_, ok := v.(string)
+	return ok
 }

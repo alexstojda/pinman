@@ -1,15 +1,12 @@
 package utils
 
 import (
-	"database/sql/driver"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gin-gonic/gin"
+	m "github.com/onsi/gomega"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"net/http/httptest"
-	"time"
-
-	m "github.com/onsi/gomega"
 )
 
 func NewGormMock() (db *gorm.DB, mock sqlmock.Sqlmock) {
@@ -32,18 +29,4 @@ func NewGinTestCtx() (*gin.Context, *httptest.ResponseRecorder, *gin.Engine) {
 	ctx, router := gin.CreateTestContext(recorder)
 
 	return ctx, recorder, router
-}
-
-type AnyTime struct{}
-
-func (a AnyTime) Match(v driver.Value) bool {
-	_, ok := v.(time.Time)
-	return ok
-}
-
-type AnyString struct{}
-
-func (a AnyString) Match(v driver.Value) bool {
-	_, ok := v.(string)
-	return ok
 }

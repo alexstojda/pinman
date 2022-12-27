@@ -23,8 +23,7 @@ type Config struct {
 	TokenSecretKey    string        `mapstructure:"TOKEN_SECRET_KEY"`
 }
 
-func LoadConfig(path string) (*Config, error) {
-	viper.AddConfigPath(path)
+func LoadConfig() (*Config, error) {
 	viper.SetTypeByDefaultValue(true)
 	viper.SetConfigType("env")
 	if envFile := os.Getenv("ENV_FILE"); envFile != "" {
