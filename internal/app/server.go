@@ -117,8 +117,5 @@ func (s *Server) StartServer() error {
 		}
 	}
 
-	// Uncomment below to enable prometheus metrics
-	//ConfigurePrometheus(router, []string{})
-
 	return router.Run()
 }

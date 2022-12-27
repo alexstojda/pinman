@@ -24,13 +24,3 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-
-func (u User) GetUserClaims() UserClaims {
-	return UserClaims{
-		ID:       u.ID,
-		Name:     u.Name,
-		Email:    u.Email,
-		Role:     u.Role,
-		Verified: u.Verified,
-	}
-}
