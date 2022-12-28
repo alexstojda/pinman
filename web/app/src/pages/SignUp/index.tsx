@@ -20,7 +20,7 @@ const api = new Api();
 export default function SignUpPage() {
   const navigate = useNavigate();
 
-  const [user] = useAuth({});
+  const {user} = useAuth({});
 
   const [registrationData, setRegistrationData] = useState<UserRegister>({
     name: "",

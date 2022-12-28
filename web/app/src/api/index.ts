@@ -86,7 +86,7 @@ export class Api {
   }
 
   // Method used by the generated API client to get the access_token.
-  private accessToken = (): string => {
+  private accessToken(): string {
     const token = this.getJwtToken()
     if (token && token.expires > new Date()) {
       return token.token
@@ -94,17 +94,17 @@ export class Api {
     return "";
   };
 
-  private configuration = () => {
+  private configuration(): Configuration {
     const openapiConfig = new Configuration();
     openapiConfig.accessToken = this.accessToken;
     return openapiConfig;
   };
 
-  public userApi = () => {
+  public userApi(): UsersApi {
     return new UsersApi(this.configuration());
   };
 
-  public authApi = () => {
+  public authApi(): AuthApi {
     return new AuthApi(this.configuration());
   }
 
