@@ -1,8 +1,8 @@
 import {AuthApi, Configuration, ErrorResponse, UserLogin, UsersApi} from "./generated";
 import {AxiosError} from "axios";
 
-const ACCESS_TOKEN_KEY = 'access_token';
-const REFRESH_DEADLINE = 5 * 1000 * 60 // 5 minutes
+export const TOKEN_KEY = 'token';
+export const REFRESH_DEADLINE = 5 * 1000 * 60 // 5 minutes
 
 export type Token = {
   token: string
@@ -12,7 +12,7 @@ export type Token = {
 export class Api {
   // Retrieve the Token from local storage
   private getJwtToken(): Token | undefined {
-    const tokenStr = localStorage.getItem(ACCESS_TOKEN_KEY)
+    const tokenStr = localStorage.getItem(TOKEN_KEY)
     if (tokenStr) {
       return JSON.parse(tokenStr, (k, v) => {
         if (k === "expires") {
@@ -26,11 +26,11 @@ export class Api {
 
   // Save the Token to local storage
   public setJwtToken(token: Token) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(token))
+    localStorage.setItem(TOKEN_KEY, JSON.stringify(token))
   }
 
   public clearJwtToken() {
-    localStorage.removeItem(ACCESS_TOKEN_KEY)
+    localStorage.removeItem(TOKEN_KEY)
   }
 
   // Tries to refresh the token. Returns true if successful or token is still valid, false otherwise.
@@ -38,10 +38,11 @@ export class Api {
     const token = this.getJwtToken()
     if (token) {
 
+      // If the token is already expired, return false
       if (token.expires.getTime() < new Date(Date.now()).getTime())
         return false
 
-      // If the token will expire in longer than REFRESH_TOKEN, we should refresh
+      // If the token won't expire within thw REFRESH_DEADLINE, token is still valid
       if (token.expires.getTime() - new Date(Date.now()).getTime() > REFRESH_DEADLINE) {
         return true
       }
@@ -81,11 +82,12 @@ export class Api {
 
   // Method used by the generated API client to get the access_token.
   private accessToken(): string {
-    const token = this.getJwtToken()
-    if (token && token.expires > new Date()) {
+    const token = Api.prototype.getJwtToken()
+    if (token) {
       return token.token
     }
-    return "";
+
+    return ""
   };
 
   private configuration(): Configuration {
@@ -102,7 +104,7 @@ export class Api {
     return new AuthApi(this.configuration());
   }
 
-  public parseError = (e: AxiosError): ErrorResponse => {
+  public parseError(e: AxiosError): ErrorResponse {
     if (e.isAxiosError && e.response)
       return e.response.data as ErrorResponse
     throw new Error("parseError: could not parse error")

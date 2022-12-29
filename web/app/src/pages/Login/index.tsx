@@ -22,7 +22,7 @@ const api = new Api();
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [user] = useAuth({});
+  const {user} = useAuth({});
 
   const [searchParams] = useSearchParams();
 
