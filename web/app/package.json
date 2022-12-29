@@ -39,7 +39,7 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "!**/generated"
+      "!**/generated/*.ts"
     ]
   },
   "jestSonar": {

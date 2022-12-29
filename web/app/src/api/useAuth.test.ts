@@ -5,7 +5,6 @@ import {Api, UserResponse, UsersApi} from "./index";
 
 jest.mock("./index")
 
-// pay attention to write it at the top level of your file
 const mockedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom') as any,
