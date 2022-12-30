@@ -1,4 +1,4 @@
-/node_modules
+/web/app/node_modules
 
 .dockerignore
 .gitignore
@@ -9,3 +9,10 @@ deploy-minikube.sh
 docker-compose.yaml
 Dockerfile
 README.md
+
+/build
+
+/internal/app/generated
+/web/app/src/generated
+
+.env.local

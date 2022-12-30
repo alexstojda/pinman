@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  description: A web application for the management of a pinball league
+  title: PinMan - Pinball League Management
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080/api
+paths:
+  /users/register:
+    post:
+      description: Registers a new user account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRegister'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+          description: User was registered successfully
+        "400":
+          $ref: "#/components/responses/badRequest"
+      tags:
+        - users
+  /auth/login:
+    post:
+      description: Retrieve an access and refresh token to authenticate requests to
+        the api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userLogin'
+        required: true
+      responses:
+        "200":
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+          description: User was registered authenticated
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+      tags:
+        - auth
+  /auth/refresh:
+    get:
+      description: Refresh an access token
+      security:
+        - pinmanAuth: []
+      responses:
+        "200":
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+          description: Token successfully refreshed
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+      tags:
+        - auth
+  /users/me:
+    get:
+      description: Retrieve profile information of the currently authenticated user
+      security:
+        - pinmanAuth:
+            - user
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+          description: Successful response
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+      tags:
+        - users
+components:
+  responses:
+    unauthorized:
+      description: unauthorized access for a lack of authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    forbidden:
+      description: forbidden access for a lack of sufficient privileges
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    badRequest:
+      description: request was malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+  schemas:
+    user:
+      example:
+        role: role
+        updated_at: updated_at
+        name: name
+        created_at: created_at
+        id: id
+        email: email
+      properties:
+        id:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        email:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required,email
+        role:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        created_at:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        updated_at:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - role
+        - created_at
+        - updated_at
+    userRegister:
+      properties:
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        email:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required,email
+        password:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required,min=8
+        passwordConfirm:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - passwordConfirm
+    userLogin:
+      properties:
+        username:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        password:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+      type: object
+      required:
+        - username
+        - password
+    errorResponse:
+      required:
+        - status
+        - title
+        - detail
+      properties:
+        status:
+          type: integer
+        title:
+          type: string
+        detail:
+          type: string
+        meta:
+          type: object
+      type: object
+    userResponse:
+      example:
+        user:
+          role: role
+          updated_at: updated_at
+          name: name
+          created_at: created_at
+          id: id
+          email: email
+      properties:
+        user:
+          $ref: '#/components/schemas/user'
+      type: object
+    tokenResponse:
+      example:
+        expire: 2022-12-15T17:41:57-05:00
+        access_token: access_token
+      properties:
+        expire:
+          type: string
+        access_token:
+          type: string
+      type: object
+      required:
+        - expire
+        - access_token
+  securitySchemes:
+    pinmanAuth:
+      flows:
+        password:
+          tokenUrl: "{{baseUrl}}/auth/login"
+          refreshUrl: "{{baseUrl}}/auth/refresh"
+          scopes:
+            user: allows interacting with the system as a registered user
+            admin: allows reading resources
+      type: oauth2

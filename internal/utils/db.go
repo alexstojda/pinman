@@ -16,7 +16,9 @@ func ConnectDB(config *Config) (*gorm.DB, error) {
 		config.DBPort,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: GormLogger{},
+	})
 	if err != nil {
 		return nil, err
 	}

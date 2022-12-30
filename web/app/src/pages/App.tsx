@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import apiUrl from './helpers/apiUrl';
+import React, {useEffect, useState} from 'react';
+import logo from '../resources/logo.svg';
+import apiUrl from '../helpers/apiUrl';
 import './App.css';
 import axios from 'axios';
 
 function App() {
   const [helloResponse, setHelloResponse] = useState({});
 
-  useEffect(() => {
-    getHello()
-  })
+  useEffect(getHello, [])
 
   function getHello() {
     axios
@@ -26,7 +24,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} className="App-logo" alt="logo"/>
         <span>
           <strong>/api/hello</strong> returned:
         </span>

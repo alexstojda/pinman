@@ -5,7 +5,7 @@ services:
     build:
       context: .
       target: node-dev
-    image: alexstojda/pinman-development:${VERSION:-local}
+    image: alexstojda/pinman/node-dev:${VERSION:-local}
 
   pinman-go-dev:
     depends_on:
@@ -13,9 +13,9 @@ services:
     build:
       context: .
       target: go-dev
-    image: alexstojda/pinman-development:${VERSION:-local}
+    image: alexstojda/pinman/go-dev:${VERSION:-local}
 
-  migrate-dev:
+  migrate:
     depends_on:
       - postgres
     build:
@@ -27,17 +27,40 @@ services:
       - ./.env.local
     environment:
       - POSTGRES_HOST=postgres
-    image: alexstojda/pinman-development:${VERSION:-local}
+    image: alexstojda/pinman/migrate:${VERSION:-local}
 
   pinman:
+    depends_on:
+      - migrate
     build:
       context: .
       target: prod
-    image: alexstojda/pinman:${VERSION:-local}
+    env_file:
+      - ./.env.local
     environment:
-      - NAME=value
+      - POSTGRES_HOST=postgres
     ports:
       - "8080"
+    image: alexstojda/pinman:${VERSION:-local}
+
+  ## Code generation
+  openapi-server:
+    build:
+      context: .
+      target: go-gen
+    image: alexstojda/pinman/openapi-server:${VERSION:-local}
+    entrypoint: "sleep"
+    command:
+      - infinity
+
+  openapi-client:
+    build:
+      context: .
+      target: node-gen
+    image: alexstojda/pinman/openapi-client:${VERSION:-local}
+    entrypoint: "sleep"
+    command:
+      - infinity
 
   ### Dependencies
   postgres:

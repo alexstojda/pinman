@@ -27,17 +27,22 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           # File containing the version Spec of the version to use.  Examples: .nvmrc, .node-version, .tool-versions.
-          node-version-file: .nvmrc
+          node-version-file: web/app/.nvmrc
           # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
           cache: yarn
+          cache-dependency-path: web/app/yarn.lock
       - uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
       - name: Setup dependencies
         run: make setup
+      - name: Generate code from spec
+        run: make generate
+      - name: Run go vet
+        run: go vet ./...
       - name: Run frontend tests
-        run: yarn test
+        run: make test-frontend
       - name: Run backend tests
-        run: go test ./...
+        run: make test-backend
       - name: Build Docker image
         uses: docker/build-push-action@v3.2.0
         with:
@@ -70,7 +75,19 @@ jobs:
           git-user-email: actions@github.com
           fallback-version: 0.0.0
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-commit: false
           git-push: false
+
+      - name: Update version field in OAPI spec file
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: mikefarah/yq@v4.30.4
+        with:
+          cmd: yq -i '.info.version = "${{ steps.changelog.outputs.version }}"' 'api/openapi.yaml'
+
+      - name: Commit release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        run: |
+          git commit -m "chore(release): ${{ steps.changelog.outputs.tag }} [skip ci]"
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -80,7 +97,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            type=semver,pattern={{version}},value=${{ steps.semver.outputs.tag }}
+            type=semver,pattern={{version}},value=${{ steps.changelog.outputs.tag }}
       #          type=ref,event=branch
       #          type=ref,event=pr
 
