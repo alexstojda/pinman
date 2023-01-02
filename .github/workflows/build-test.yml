@@ -52,11 +52,11 @@ jobs:
     needs: install-and-test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
       - name: Log in to the Container registry
         uses: docker/login-action@v2.1.0
         with:
@@ -88,6 +88,8 @@ jobs:
       - name: Commit release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
+          git config --local user.name github-actions
+          git config --local user.email github-actions@github.com
           git add .
           git commit -m "chore(release): ${{ steps.changelog.outputs.tag }} [skip ci]"
 
