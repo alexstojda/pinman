@@ -1,6 +1,5 @@
-import {useAuth} from "../../api/useAuth";
 import {Button} from "@chakra-ui/react";
-import {Api} from "../../api";
+import {Api, useAuth} from "../../api";
 import {useNavigate} from "react-router-dom";
 
 export default function AuthTest() {

@@ -7,10 +7,9 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import {Api, UserRegister} from "../../api"
+import {Api, UserRegister, useAuth} from "../../api"
 import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "../../api/useAuth";
 import {AxiosError} from "axios";
 import AuthLayout, {AlertData} from "../../layouts/auth";
 import {Link as ReactLink} from "react-router-dom";

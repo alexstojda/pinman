@@ -1,9 +1,11 @@
 import {act, renderHook, RenderHookResult} from '@testing-library/react'
 import {AuthOptions, AuthState, useAuth} from "./useAuth";
 import {faker} from "@faker-js/faker";
-import {Api, UserResponse, UsersApi} from "./index";
+import {Api} from "./api";
+import {UserResponse, UsersApi} from './generated'
 
-jest.mock("./index")
+jest.mock("./api")
+jest.mock('./generated')
 
 const mockedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({

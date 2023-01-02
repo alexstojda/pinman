@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {User} from "./generated";
-import {Api} from "./index";
+import {Api} from "./api";
 import {useNavigate} from "react-router-dom";
 
 export type AuthOptions = {
