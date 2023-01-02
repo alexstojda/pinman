@@ -10,10 +10,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import {AtSignIcon, LockIcon} from "@chakra-ui/icons";
-import {Api, UserLogin} from "../../api"
+import {Api, UserLogin, useAuth} from "../../api"
 import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "../../api/useAuth";
 import {AxiosError} from "axios";
 import AuthLayout, {AlertData} from "../../layouts/auth";
 import {Link as ReactLink, useSearchParams} from "react-router-dom";
@@ -110,6 +109,7 @@ export default function LoginPage() {
             type="submit"
             variant="solid"
             width="full"
+            data-testid="login"
           >
             Login
           </Button>

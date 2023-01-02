@@ -130,6 +130,7 @@ export default function SignUpPage() {
             type="submit"
             variant="solid"
             width="full"
+            data-testid="create account"
           >
             Create account
           </Button>
