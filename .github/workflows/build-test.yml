@@ -132,6 +132,10 @@ jobs:
         with:
           cmd: yq -i '.info.version = "${{ steps.changelog.outputs.version }}"' 'api/openapi.yaml'
 
+      - name: Update version field of sonar-project.properties
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        run: sed -i "s/sonar.projectVersion=.*/sonar.projectVersion=${{ steps.changelog.outputs.version }}/" "sonar-project.properties"
+
       - name: Commit release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
