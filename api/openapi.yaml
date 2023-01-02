@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: A web application for the management of a pinball league
   title: PinMan - Pinball League Management
-  version: 0.1.0
+  version: 0.2.1
 servers:
   - url: http://localhost:8080/api
 paths:
@@ -28,8 +28,7 @@ paths:
         - users
   /auth/login:
     post:
-      description: Retrieve an access and refresh token to authenticate requests to
-        the api
+      description: Retrieve an access and refresh token to authenticate requests to the api
       requestBody:
         content:
           application/json:
