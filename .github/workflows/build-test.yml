@@ -75,7 +75,8 @@ jobs:
           git-user-email: actions@github.com
           fallback-version: 0.0.0
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          skip-commit: false
+          skip-commit: true
+          version-file: web/app/package.json
           git-push: false
 
       - name: Update version field in OAPI spec file
@@ -87,6 +88,7 @@ jobs:
       - name: Commit release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
+          git add .
           git commit -m "chore(release): ${{ steps.changelog.outputs.tag }} [skip ci]"
 
       - name: Extract metadata (tags, labels) for Docker

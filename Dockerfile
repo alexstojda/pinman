@@ -23,7 +23,7 @@ COPY web/app/package.json /app
 RUN yarn
 
 COPY web/app/ /app
-COPY --from=node-gen /out/ /app/src/generated
+COPY --from=node-gen /out/ /app/src/api/generated
 RUN yarn build
 
 ENTRYPOINT ["yarn"]
