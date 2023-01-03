@@ -1,3 +1,12 @@
+## [0.2.3](https://github.com/alexstojda/pinman/compare/v0.2.2...v0.2.3) (2023-01-03)
+
+
+### Bug Fixes
+
+* Refactor code for testability and add tests ([#16](https://github.com/alexstojda/pinman/issues/16)) ([d92ead0](https://github.com/alexstojda/pinman/commit/d92ead0a691fba8e6cdbd57155391dab042c970f))
+
+
+
 ## [0.2.2](https://github.com/alexstojda/pinman/compare/v0.2.1...v0.2.2) (2023-01-02)
 
 
