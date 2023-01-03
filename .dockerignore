@@ -3,16 +3,16 @@
 .dockerignore
 .gitignore
 .git
+.github
 .idea
-.minikube
-deploy-minikube.sh
 docker-compose.yaml
 Dockerfile
 README.md
+sonar-project.properties
 
 /build
 
 /internal/app/generated
-/web/app/src/generated
+/web/app/src/api/generated
 
 .env.local
