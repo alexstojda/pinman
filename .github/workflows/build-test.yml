@@ -81,6 +81,7 @@ jobs:
         with:
           # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
+          ref: ${{ github.ref == 'refs/heads/main' && 'main' || '' }}
       - uses: actions/download-artifact@v2
         with:
           name: frontend-reports
