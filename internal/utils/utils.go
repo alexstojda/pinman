@@ -7,5 +7,5 @@ func PtrString(str string) *string {
 }
 
 func FormatTime(t time.Time) string {
-	return t.Format(time.RFC3339)
+	return t.Format(time.RFC3339Nano)
 }

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import logo from '../resources/logo.svg';
-import apiUrl from '../helpers/apiUrl';
+import {apiUrl} from '../helpers';
 import './App.css';
 import axios from 'axios';
 
@@ -10,15 +10,13 @@ function App() {
   useEffect(getHello, [])
 
   function getHello() {
-    axios
-      .get(apiUrl("/api/hello"), {
-        headers: {
-          Accept: "application/json",
-        },
-      })
-      .then((response) => {
-        setHelloResponse(response.data)
-      });
+    axios.get(apiUrl("/api/hello"), {
+      headers: {
+        Accept: "application/json",
+      },
+    }).then((response) => {
+      setHelloResponse(response.data)
+    });
   }
 
   return (

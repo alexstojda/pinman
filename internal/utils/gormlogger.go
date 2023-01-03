@@ -15,6 +15,7 @@ type GormLogger struct {
 }
 
 func (l GormLogger) LogMode(logger.LogLevel) logger.Interface {
+	// log mode is ignored. Gormlogger will use the global log level
 	return l
 }
 

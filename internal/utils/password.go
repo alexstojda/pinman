@@ -5,8 +5,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var HashCost = bcrypt.DefaultCost
+
 func HashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), HashCost)
 
 	if err != nil {
 		return "", fmt.Errorf("could not hash password %w", err)

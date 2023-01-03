@@ -1,16 +1,20 @@
 import {useEffect, useState} from 'react';
 import {User} from "./generated";
-import {Api} from "./index";
+import {Api} from "./api";
 import {useNavigate} from "react-router-dom";
 
-type AuthOptions = {
+export type AuthOptions = {
   requireAuth?: boolean;
   requireRoles?: string[];
 }
 
+export type AuthState = {
+  user: User | undefined
+}
+
 const api = new Api();
 
-export function useAuth(opts: AuthOptions) {
+export function useAuth(opts: AuthOptions): AuthState {
   const navigate = useNavigate()
 
   const [user, setUser] = useState<User>();
@@ -47,5 +51,7 @@ export function useAuth(opts: AuthOptions) {
   }, [isAuthenticated, opts.requireAuth, navigate])
 
 
-  return [user];
+  return {
+    user
+  };
 }

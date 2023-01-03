@@ -1,27 +1,36 @@
 FRONTEND_DIR = './web/app'
 
-setup: mod yarn env-local
+setup: setup-frontend setup-backend
 
-env: env-local keys-dev
+setup-frontend:
+	@cd $(FRONTEND_DIR) && yarn
 
-env-local:
-	@cp .env .env.local
-
-yarn:
-	@cd $(FRONTEND_DIR) &&	yarn
+setup-backend: mod
 
 mod:
 	@go mod download
 
+env: env-local keys
+
+env-local:
+	@cp .env .env.local
+
 clean:
 	@rm -rf $(FRONTEND_DIR)/build
 
-generate:
-	@docker compose up --remove-orphans --build -d openapi-server openapi-client
-	@rm -rf internal/app/generated web/app/src/api/generated && true
-	@docker compose cp openapi-server:/out internal/app/generated
+generate: generate-backend generate-frontend
+
+generate-frontend:
+	@docker compose up --remove-orphans --build -d openapi-client
+	@rm -rf web/app/src/api/generated && true
 	@docker compose cp openapi-client:/out web/app/src/api/generated
-	@docker compose stop openapi-server openapi-client
+	@docker compose stop openapi-client
+
+generate-backend:
+	@docker compose up --remove-orphans --build -d openapi-server
+	@rm -rf internal/app/generated && true
+	@docker compose cp openapi-server:/out internal/app/generated
+	@docker compose stop openapi-server
 
 build: build-backend build-frontend
 
@@ -49,22 +58,24 @@ run-frontend:
 
 test: test-backend test-frontend
 
+test-setup:
+	@go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+
 test-frontend:
 	@cd $(FRONTEND_DIR) && yarn test
+	@rm -rf ./reports/ts && true
+	@mkdir -p ./reports/ts
+	@mv -f $(FRONTEND_DIR)/coverage $(FRONTEND_DIR)/reports ./reports/ts/
 
-test-backend:
-	@go test ./...
+test-backend: test-setup
+	@ginkgo	./...
 
-keys-dev:
+keys:
 	@echo "Generating key-pair for jwt tokens..."
 	@ssh-keygen -f `pwd`/token -t rsa -N '' -q
-	@sed -i '' -e "s/TOKEN_PRIVATE_KEY.*/TOKEN_PRIVATE_KEY=`cat ./token | base64`/" "./.env.local"
-	@sed -i '' -e "s/TOKEN_PUBLIC_KEY.*/TOKEN_PUBLIC_KEY=`cat ./token.pub | base64`/" "./.env.local"
+	@sed -i "s/TOKEN_PRIVATE_KEY.*/TOKEN_PRIVATE_KEY=`cat ./token | base64 | tr -d '\n'`/" "./.env.local"
+	@sed -i "s/TOKEN_PUBLIC_KEY.*/TOKEN_PUBLIC_KEY=`cat ./token.pub | base64 | tr -d '\n'`/" "./.env.local"
 	@rm -r ./token ./token.pub
 
-#test-cov:
-#	mkdir -p coverage
-#	@go test -covermode=atomic -coverprofile=./coverage/coverage.txt ./...
-#	@go get github.com/axw/gocov/gocov
-#	@go get github.com/AlekSi/gocov-xml
-#	@gocov convert ./coverage/coverage.txt | gocov-xml > ./coverage/coverage.xml
+test-backend-cov: test-setup
+	@ginkgo --cover --race --json-report=report.json --output-dir=reports/go ./...
