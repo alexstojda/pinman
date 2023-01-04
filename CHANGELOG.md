@@ -1,3 +1,12 @@
+## [0.2.4](https://github.com/alexstojda/pinman/compare/v0.2.3...v0.2.4) (2023-01-04)
+
+
+### Bug Fixes
+
+* Adjust config to deploy to railway ([e1a3cf0](https://github.com/alexstojda/pinman/commit/e1a3cf0521075e69bdf43f08a6190bad075fe77b))
+
+
+
 ## [0.2.3](https://github.com/alexstojda/pinman/compare/v0.2.2...v0.2.3) (2023-01-03)
 
 
@@ -37,17 +46,6 @@
 ### Features
 
 * User registration and authentication ([#15](https://github.com/alexstojda/pinman/issues/15)) ([b42b560](https://github.com/alexstojda/pinman/commit/b42b560328d6ce4e8d3b8eaf018207564811da46))
-
-
-
-# [0.1.0](https://github.com/alexstojda/pinman/compare/37b77f81480ba5f7340ffea9cbf7dad8bedba6d7...v0.1.0) (2022-11-15)
-
-
-### Features
-
-* **project:** Setup PostgreSQL and gorm ([8bfe607](https://github.com/alexstojda/pinman/commit/8bfe607d9c9af2e6e3085df60f1fd1700dc5e605)), closes [#10](https://github.com/alexstojda/pinman/issues/10)
-* **project:** Setup PostgreSQL and gorm ([4ea0d95](https://github.com/alexstojda/pinman/commit/4ea0d95fdb8db0465ec8bec2a688b070f4080b67)), closes [#10](https://github.com/alexstojda/pinman/issues/10)
-* **project:** Setup PostgreSQL and gorm ([37b77f8](https://github.com/alexstojda/pinman/commit/37b77f81480ba5f7340ffea9cbf7dad8bedba6d7)), closes [#10](https://github.com/alexstojda/pinman/issues/10)
 
 
 
