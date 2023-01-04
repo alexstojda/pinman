@@ -1,3 +1,12 @@
+## [0.2.5](https://github.com/alexstojda/pinman/compare/v0.2.4...v0.2.5) (2023-01-04)
+
+
+### Bug Fixes
+
+* Correct order of precedence for config vars ([0ab991c](https://github.com/alexstojda/pinman/commit/0ab991c6199dbb6a8f5e7fc2dc1cec159fa41a09))
+
+
+
 ## [0.2.4](https://github.com/alexstojda/pinman/compare/v0.2.3...v0.2.4) (2023-01-04)
 
 
@@ -32,20 +41,6 @@
 
 * **ci:** restore package publish permissions ([8f23f52](https://github.com/alexstojda/pinman/commit/8f23f528d11678f6b927908dbc2151a0daf0446c))
 * **ci:** use PAT for release commit to bypass branch protections ([91bd1df](https://github.com/alexstojda/pinman/commit/91bd1df4f260fc3e0087b6700f050096e33e0096))
-
-
-
-# [0.2.0](https://github.com/alexstojda/pinman/compare/v0.1.0...v0.2.0) (2023-01-02)
-
-
-### Bug Fixes
-
-* **ci:** fix publish commit step ([4f0c04e](https://github.com/alexstojda/pinman/commit/4f0c04ebefd39b4998dd00748b8b2f658d6cea4d))
-
-
-### Features
-
-* User registration and authentication ([#15](https://github.com/alexstojda/pinman/issues/15)) ([b42b560](https://github.com/alexstojda/pinman/commit/b42b560328d6ce4e8d3b8eaf018207564811da46))
 
 
 
