@@ -36,12 +36,12 @@ func LoadConfig() (*Config, error) {
 		viper.SetConfigFile(".env")
 	}
 
-	viper.AutomaticEnv()
-
 	err := viper.ReadInConfig()
 	if err != nil {
 		return nil, err
 	}
+
+	viper.AutomaticEnv()
 
 	config := &Config{}
 	err = viper.Unmarshal(config)

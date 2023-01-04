@@ -1,6 +1,7 @@
 [build]
 builder = "dockerfile"
-watchPatterns = ["src/**"]
+# Only deploy versioned changes
+watchPatterns = ["CHANGELOG.md"]
 
 [deploy]
 healthcheckPath = "/api/health"
