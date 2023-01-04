@@ -12,14 +12,19 @@ func ConnectDB(config *Config, dialector ...gorm.Dialector) (*gorm.DB, error) {
 	// Allow providing custom gorm.Dialector for mocks
 	var dialectorVar gorm.Dialector
 	if len(dialector) == 0 {
-		dsn := fmt.Sprintf(
-			"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
-			config.DBHost,
-			config.DBUserName,
-			config.DBUserPassword,
-			config.DBName,
-			config.DBPort,
-		)
+		var dsn string
+		if len(config.RailwayDBUrl) > 0 {
+			dsn = config.RailwayDBUrl
+		} else {
+			dsn = fmt.Sprintf(
+				"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
+				config.DBHost,
+				config.DBUserName,
+				config.DBUserPassword,
+				config.DBName,
+				config.DBPort,
+			)
+		}
 		dialectorVar = postgres.Open(dsn)
 	} else {
 		dialectorVar = dialector[0]

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -21,14 +22,24 @@ const (
 )
 
 func CreateJWTMiddleware(config *utils.Config, db *gorm.DB) (*jwt.GinJWTMiddleware, error) {
+	tokenPublicKey, err := base64.StdEncoding.DecodeString(config.TokenPublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode public key: %v", err)
+	}
+
+	tokenPrivateKey, err := base64.StdEncoding.DecodeString(config.TokenPrivateKey)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode private key: %v", err)
+	}
+
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:           "pinman",
 		Key:             []byte(config.TokenSecretKey),
 		Timeout:         config.TokenExpiresAfter,
 		MaxRefresh:      config.TokenExpiresAfter,
-		PubKeyBytes:     []byte(config.TokenPublicKey),
-		PrivKeyBytes:    []byte(config.TokenPrivateKey),
+		PubKeyBytes:     tokenPublicKey,
+		PrivKeyBytes:    tokenPrivateKey,
 		IdentityKey:     IdentityKey,
 		PayloadFunc:     payloadFunc,
 		IdentityHandler: getIdentityHandlerFunc(db),

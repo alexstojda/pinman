@@ -21,6 +21,10 @@ type Config struct {
 	TokenPublicKey    string        `mapstructure:"TOKEN_PUBLIC_KEY"`
 	TokenExpiresAfter time.Duration `mapstructure:"TOKEN_EXPIRES_AFTER"`
 	TokenSecretKey    string        `mapstructure:"TOKEN_SECRET_KEY"`
+
+	// Added to support deployment to railway
+	RailwayDBUrl     string `mapstructure:"DATABASE_URL"`
+	RailwayStaticUrl string `mapstructure:"RAILWAY_STATIC_URL"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -41,5 +45,10 @@ func LoadConfig() (*Config, error) {
 
 	config := &Config{}
 	err = viper.Unmarshal(config)
+
+	if len(config.RailwayStaticUrl) > 0 {
+		config.ClientOrigins = append(config.ClientOrigins, config.RailwayStaticUrl)
+	}
+
 	return config, nil
 }
