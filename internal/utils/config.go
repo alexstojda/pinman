@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"os"
 	"time"
@@ -28,6 +29,7 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
+	viper.AutomaticEnv()
 	viper.SetTypeByDefaultValue(true)
 	viper.SetConfigType("env")
 	if envFile := os.Getenv("ENV_FILE"); envFile != "" {
@@ -41,9 +43,20 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	viper.AutomaticEnv()
-
 	config := &Config{}
+
+	// Silly bug in viper, it will only read ENV variables if they are defined in a .env file.
+	// So we manually tell viper to read all variables defined in the Config type.
+	envKeysMap := &map[string]interface{}{}
+	if err := mapstructure.Decode(config, &envKeysMap); err != nil {
+		return nil, err
+	}
+	for k := range *envKeysMap {
+		if bindErr := viper.BindEnv(k); bindErr != nil {
+			return nil, err
+		}
+	}
+
 	err = viper.Unmarshal(config)
 
 	if len(config.RailwayStaticUrl) > 0 {
