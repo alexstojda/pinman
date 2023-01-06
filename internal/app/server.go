@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/logger"
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
+	"net/http"
 	"pinman/internal/app/api"
 	"pinman/internal/app/api/auth"
 	"pinman/internal/app/api/errors"
@@ -16,8 +16,8 @@ import (
 	"pinman/internal/app/api/hello"
 	"pinman/internal/app/api/user"
 	"pinman/internal/app/generated"
-	"pinman/internal/app/middleware"
 	"pinman/internal/utils"
+	"strings"
 )
 
 type Server struct {
@@ -78,11 +78,6 @@ func (s *Server) StartServer() error {
 		return fmt.Errorf("could not initialize JWT middleware: %v", err)
 	}
 
-	router.NoRoute(authMiddleware.MiddlewareFunc(), func(c *gin.Context) {
-		errors.AbortWithError(404, "page not found", c)
-		return
-	})
-
 	generated.RegisterHandlersWithOptions(
 		router,
 		&api.Server{
@@ -106,16 +101,23 @@ func (s *Server) StartServer() error {
 	// SPA ROUTE
 	// Only loaded if SPAPath is defined.
 	if s.Config.SPAPath != "" {
+		router.GET("/", func(c *gin.Context) {
+			c.Redirect(http.StatusPermanentRedirect, "/app")
+		})
+
 		log.Debug().Str("spaPath", s.Config.SPAPath).Msg("SPA_PATH is set, will serve")
 
-		spaRoute := static.Serve("/", static.LocalFile(s.Config.SPAPath, true))
-
-		if s.SPACacheDisabled {
-			router.Use(middleware.NoCache()).Use(spaRoute)
-		} else {
-			router.Use(spaRoute)
-		}
+		router.Static("/app", s.Config.SPAPath)
 	}
+
+	router.NoRoute(func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/app") && s.Config.SPAPath != "" {
+			c.File(fmt.Sprintf("%s/index.html", s.Config.SPAPath))
+			return
+		}
+
+		errors.AbortWithError(404, "page not found", c)
+	})
 
 	return router.Run()
 }
