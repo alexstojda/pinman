@@ -20,7 +20,7 @@ test('renders with api hello data', async () => {
 
   const hello = await wrapper.findByText('{"hello":"world"}')
   expect(hello).toBeInTheDocument()
-  expect(mockedAxios.get).toBeCalledWith(apiUrl("/api/hello"), {
+  expect(mockedAxios.get).toBeCalledWith(apiUrl("/hello"), {
     headers: {
       Accept: "application/json",
     },

@@ -24,7 +24,7 @@ root.render(
 
 function Router() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={'/app'}>
       <Routes>
         <Route path="/" element={<App/>}/>
         <Route path={"/login"} element={<Login/>}/>
