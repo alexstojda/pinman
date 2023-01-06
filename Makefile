@@ -41,17 +41,14 @@ build-backend:
 build-frontend:
 	@cd $(FRONTEND_DIR) && yarn build
 
-run: clean generate build-frontend run-migrate
+run: clean generate build-frontend
 	@SPA_PATH=./web/app/build go run cmd/pinman/main.go
 
-run-backend: run-migrate
+run-backend:
 	@go run cmd/pinman/main.go
 
 run-database:
 	@docker compose up -d postgres
-
-run-migrate: run-database
-	@go run cmd/migrate/main.go
 
 run-frontend:
 	@cd $(FRONTEND_DIR) && REACT_APP_API_HOST=http://localhost:8080 yarn start
