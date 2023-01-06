@@ -1,3 +1,16 @@
+## [0.2.6](https://github.com/alexstojda/pinman/compare/v0.2.5...v0.2.6) (2023-01-06)
+
+
+### Bug Fixes
+
+* Add code to correct viper bug ([f3565ce](https://github.com/alexstojda/pinman/commit/f3565ce55e2c41d04f880e2ba3c6c75d028faced))
+* **backend:** Fix serving static app ([4c61fb9](https://github.com/alexstojda/pinman/commit/4c61fb9a4424224941fb0c24d222564daaf278a7))
+* **backend:** Run migrations on every server start ([19c715c](https://github.com/alexstojda/pinman/commit/19c715c04287d8c98a0df79bd599ae0b5cdbcd5f))
+* **frontend:** Set base path to match static serve route ([3c793e6](https://github.com/alexstojda/pinman/commit/3c793e65a3aeb35752952c854da857d09b46e292))
+* Use RAILWAY_STATIC_URL during build ([320e84e](https://github.com/alexstojda/pinman/commit/320e84eaf77868b6cce4fbf93720403fd9628e83))
+
+
+
 ## [0.2.5](https://github.com/alexstojda/pinman/compare/v0.2.4...v0.2.5) (2023-01-04)
 
 
@@ -31,16 +44,6 @@
 ### Bug Fixes
 
 * **ci:** restore contents write permissions ([004b592](https://github.com/alexstojda/pinman/commit/004b59204668c5ff678b843cea2a93e7c07f580a))
-
-
-
-## [0.2.1](https://github.com/alexstojda/pinman/compare/v0.2.0...v0.2.1) (2023-01-02)
-
-
-### Bug Fixes
-
-* **ci:** restore package publish permissions ([8f23f52](https://github.com/alexstojda/pinman/commit/8f23f528d11678f6b927908dbc2151a0daf0446c))
-* **ci:** use PAT for release commit to bypass branch protections ([91bd1df](https://github.com/alexstojda/pinman/commit/91bd1df4f260fc3e0087b6700f050096e33e0096))
 
 
 
