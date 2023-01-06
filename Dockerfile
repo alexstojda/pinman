@@ -1,3 +1,7 @@
+ARG RAILWAY_STATIC_URL="localhost:8080"
+ARG PROTOCOL="http://"
+ARG REACT_APP_API_HOST="$PROTOCOL$RAILWAY_STATIC_URL/api"
+
 #######
 # Generate Axios Typescript API Client
 #######
@@ -24,6 +28,9 @@ RUN yarn
 
 COPY web/app/ /app
 COPY --from=node-gen /out/ /app/src/api/generated
+
+ARG REACT_APP_API_HOST
+ENV REACT_APP_API_HOST $REACT_APP_API_HOST
 RUN yarn build
 
 ENTRYPOINT ["yarn"]
@@ -75,7 +82,6 @@ COPY --chown=golang:root cmd ./cmd
 COPY --chown=golang:root internal ./internal
 COPY --from=go-gen /out/ internal/app/generated/
 RUN go build -v -o pinman ./cmd/pinman/
-RUN go build -v -o migrate ./cmd/migrate/
 
 ENTRYPOINT ["make"]
 CMD ["test"]
@@ -89,7 +95,7 @@ COPY --from=go-dev /etc/passwd /etc/group  /etc/
 COPY --from=go-dev /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # Kube crashes if there isn't a tmp directory to write error logs to
 COPY --from=go-dev --chown=golang:root /tmp /tmp
-COPY --from=go-dev --chown=golang:root /app/pinman /app/migrate /app/
+COPY --from=go-dev --chown=golang:root /app/pinman /app/
 COPY --from=node-dev --chown=golang:root /app/build /app/html
 
 COPY --chown=golang:root .env /app/

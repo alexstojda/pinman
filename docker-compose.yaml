@@ -15,32 +15,20 @@ services:
       target: go-dev
     image: alexstojda/pinman/go-dev:${VERSION:-local}
 
-  migrate:
+  pinman:
     depends_on:
       - postgres
     build:
       context: .
-      target: go-dev
-    command:
-      - run-migrate
-    env_file:
-      - ./.env.local
-    environment:
-      - POSTGRES_HOST=postgres
-    image: alexstojda/pinman/migrate:${VERSION:-local}
-
-  pinman:
-    depends_on:
-      - migrate
-    build:
-      context: .
       target: prod
+      args:
+        REACT_APP_API_HOST: http://localhost:8080
     env_file:
       - ./.env.local
     environment:
       - POSTGRES_HOST=postgres
     ports:
-      - "8080"
+      - "8080:8080"
     image: alexstojda/pinman:${VERSION:-local}
 
   ## Code generation

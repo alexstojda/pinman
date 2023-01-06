@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 	"os"
@@ -60,7 +61,7 @@ func LoadConfig() (*Config, error) {
 	err = viper.Unmarshal(config)
 
 	if len(config.RailwayStaticUrl) > 0 {
-		config.ClientOrigins = append(config.ClientOrigins, config.RailwayStaticUrl)
+		config.ClientOrigins = append(config.ClientOrigins, fmt.Sprintf("https://%s", config.RailwayStaticUrl))
 	}
 
 	return config, nil

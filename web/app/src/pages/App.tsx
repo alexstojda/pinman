@@ -10,7 +10,7 @@ function App() {
   useEffect(getHello, [])
 
   function getHello() {
-    axios.get(apiUrl("/api/hello"), {
+    axios.get(apiUrl("/hello"), {
       headers: {
         Accept: "application/json",
       },

@@ -92,6 +92,7 @@ export class Api {
 
   private configuration(): Configuration {
     const openapiConfig = new Configuration();
+    openapiConfig.basePath = process.env.REACT_APP_API_HOST
     openapiConfig.accessToken = this.accessToken;
     return openapiConfig;
   };
