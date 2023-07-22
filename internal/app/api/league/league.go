@@ -72,3 +72,30 @@ func (c *Controller) CreateLeague(ctx *gin.Context) {
 		},
 	})
 }
+
+func (c *Controller) ListLeagues(ctx *gin.Context) {
+	var dbResults []models.League
+	result := c.DB.Find(&dbResults)
+	if result.Error != nil {
+		log.Err(result.Error).Msg("failed to list leagues")
+		errors.AbortWithError(http.StatusInternalServerError, "failed to list leagues", ctx)
+		return
+	}
+
+	var leagues []generated.League
+	for _, league := range dbResults {
+		leagues = append(leagues, generated.League{
+			Id:        league.ID.String(),
+			Name:      league.Name,
+			Slug:      league.Slug,
+			Location:  league.Location,
+			OwnerId:   league.Owner.ID.String(),
+			CreatedAt: utils.FormatTime(league.CreatedAt),
+			UpdatedAt: utils.FormatTime(league.UpdatedAt),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, generated.LeagueListResponse{
+		Leagues: leagues,
+	})
+}

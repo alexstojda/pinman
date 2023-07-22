@@ -40,5 +40,5 @@ func (s *Server) PostLeagues(c *gin.Context) {
 }
 
 func (s *Server) GetLeagues(c *gin.Context) {
-	//
+	s.League.ListLeagues(c)
 }
