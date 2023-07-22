@@ -248,4 +248,68 @@ var _ = ginkgo.Describe("Controller", func() {
 			})
 		})
 	})
+
+	ginkgo.When("GetLeagueWithSlug receives a request", func() {
+		ginkgo.Context("with valid request", func() {
+			ginkgo.It("succeeds", func() {
+				leagueObj := &models.League{
+					ID:        uuid.New(),
+					Name:      "Test League",
+					Slug:      "test-league",
+					Owner:     *userObj,
+					Location:  "Test Location",
+					CreatedAt: time.Now().Add(-1 * time.Hour),
+					UpdatedAt: time.Now(),
+				}
+
+				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "leagues" WHERE slug = $1`)).
+					WithArgs(leagueObj.Slug).
+					WillReturnRows(
+						sqlmock.NewRows([]string{"id", "name", "slug", "owner_id", "location", "created_at", "updated_at"}).
+							AddRow(leagueObj.ID, leagueObj.Name, leagueObj.Slug, leagueObj.Owner.ID, leagueObj.Location, leagueObj.CreatedAt, leagueObj.UpdatedAt),
+					)
+
+				req, err := http.NewRequest("GET", "/", nil)
+				gomega.Expect(err).ToNot(gomega.HaveOccurred())
+
+				router.GET("/", func(c *gin.Context) {
+					controller.GetLeagueWithSlug(c, leagueObj.Slug)
+				})
+				router.ServeHTTP(rr, req)
+
+				gomega.Expect(rr.Code).To(gomega.Equal(http.StatusOK))
+				response := &generated.LeagueResponse{}
+				err = json.Unmarshal(rr.Body.Bytes(), response)
+				gomega.Expect(err).ToNot(gomega.HaveOccurred())
+				gomega.Expect(mock.ExpectationsWereMet()).ToNot(gomega.HaveOccurred())
+
+				gomega.Expect(response.League.Name).To(gomega.Equal(leagueObj.Name))
+				gomega.Expect(response.League.Slug).To(gomega.Equal(leagueObj.Slug))
+				gomega.Expect(response.League.Location).To(gomega.Equal(leagueObj.Location))
+			})
+		})
+		ginkgo.Context("with unknown sql error", func() {
+			ginkgo.It("fails", func() {
+				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "leagues" WHERE slug = $1`)).
+					WillReturnError(fmt.Errorf("unknown error"))
+
+				req, err := http.NewRequest("GET", "/", nil)
+				gomega.Expect(err).ToNot(gomega.HaveOccurred())
+
+				router.GET("/", func(c *gin.Context) {
+					controller.GetLeagueWithSlug(c, "foo-bar")
+				})
+				router.ServeHTTP(rr, req)
+
+				gomega.Expect(rr.Code).To(gomega.Equal(http.StatusInternalServerError))
+				response := &generated.ErrorResponse{}
+				err = json.Unmarshal(rr.Body.Bytes(), response)
+				gomega.Expect(err).ToNot(gomega.HaveOccurred())
+				gomega.Expect(mock.ExpectationsWereMet()).ToNot(gomega.HaveOccurred())
+
+				gomega.Expect(response.Detail).To(gomega.Equal("failed to get league"))
+
+			})
+		})
+	})
 })

@@ -147,6 +147,32 @@ paths:
           $ref: "#/components/responses/forbidden"
       tags:
         - leagues
+  /leagues/{slug}:
+    get:
+      description: Retrieve a league by slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+              type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/leagueResponse'
+          description: Successful response
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+        "404":
+          $ref: "#/components/responses/notFound"
+      tags:
+        - leagues
 
 components:
   responses:
@@ -164,6 +190,12 @@ components:
             $ref: '#/components/schemas/errorResponse'
     badRequest:
       description: request was malformed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errorResponse'
+    notFound:
+      description: resource was not found
       content:
         application/json:
           schema:
@@ -387,15 +419,15 @@ components:
         name:
           type: string
           x-oapi-codegen-extra-tags:
-              binding: required
+            binding: required
         location:
           type: string
           x-oapi-codegen-extra-tags:
-              binding: required
+            binding: required
         slug:
           type: string
           x-oapi-codegen-extra-tags:
-              binding: required
+            binding: required
       type: object
       required:
         - name
