@@ -6,6 +6,9 @@ info:
 servers:
   - url: http://localhost:8080/api
 paths:
+  ###
+  # User/Authentication Endpoints
+  ###
   /users/register:
     post:
       description: Registers a new user account
@@ -97,6 +100,54 @@ paths:
           $ref: "#/components/responses/forbidden"
       tags:
         - users
+  ###
+  # League Endpoints
+  ###
+  /leagues:
+    get:
+      description: Retrieve a list of leagues
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/leagueListResponse'
+          description: Successful response
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+      tags:
+        - leagues
+    post:
+      description: Create a new league
+      security:
+        - pinmanAuth:
+            - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/leagueCreate'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/leagueResponse'
+          description: League was created successfully
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/forbidden"
+      tags:
+        - leagues
+
 components:
   responses:
     unauthorized:
@@ -118,6 +169,55 @@ components:
           schema:
             $ref: '#/components/schemas/errorResponse'
   schemas:
+    ###
+    # MODELS
+    ###
+    league:
+      example:
+        updated_at: updated_at
+        name: name
+        created_at: created_at
+        id: id
+        slug: slug
+        ownerId: ownerId
+        location: location
+      properties:
+        id:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: requred
+        slug:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: requred
+        ownerId:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: requred
+        location:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: requred
+        created_at:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        updated_at:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+      required:
+        - id
+        - name
+        - slug
+        - ownerId
+        - location
+        - created_at
+        - updated_at
     user:
       example:
         role: role
@@ -159,6 +259,29 @@ components:
         - role
         - created_at
         - updated_at
+
+    ###
+    # Generic Request/Response Schemas
+    ###
+    errorResponse:
+      required:
+        - status
+        - title
+        - detail
+      properties:
+        status:
+          type: integer
+        title:
+          type: string
+        detail:
+          type: string
+        meta:
+          type: object
+      type: object
+
+    ###
+    # User/Authentication Request/Response Schemas
+    ###
     userRegister:
       properties:
         name:
@@ -197,21 +320,6 @@ components:
       required:
         - username
         - password
-    errorResponse:
-      required:
-        - status
-        - title
-        - detail
-      properties:
-        status:
-          type: integer
-        title:
-          type: string
-        detail:
-          type: string
-        meta:
-          type: object
-      type: object
     userResponse:
       example:
         user:
@@ -238,6 +346,59 @@ components:
       required:
         - expire
         - access_token
+
+    ###
+    # League Request/Response Schemas
+    ###
+    leagueResponse:
+      example:
+        league:
+          updated_at: updated_at
+          name: name
+          created_at: created_at
+          id: id
+          slug: slug
+          ownerId: ownerId
+          location: location
+      properties:
+        league:
+          $ref: '#/components/schemas/league'
+      type: object
+    leagueListResponse:
+      example:
+        leagues:
+          - updated_at: updated_at
+            name: name
+            created_at: created_at
+            id: id
+            slug: slug
+            ownerId: ownerId
+            location: location
+      properties:
+        leagues:
+          type: array
+          items:
+            $ref: '#/components/schemas/league'
+      type: object
+    leagueCreate:
+      properties:
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        location:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        slug:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+      type: object
+      required:
+        - name
+        - location
+        - slug
   securitySchemes:
     pinmanAuth:
       flows:
