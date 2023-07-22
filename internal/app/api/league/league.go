@@ -99,3 +99,30 @@ func (c *Controller) ListLeagues(ctx *gin.Context) {
 		Leagues: leagues,
 	})
 }
+
+func (c *Controller) GetLeagueWithSlug(ctx *gin.Context, slug string) {
+	var dbResult models.League
+	result := c.DB.Where("slug = ?", slug).First(&dbResult)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			errors.AbortWithError(http.StatusNotFound, "league not found", ctx)
+			return
+		} else {
+			log.Err(result.Error).Msg("failed to get league")
+			errors.AbortWithError(http.StatusInternalServerError, "failed to get league", ctx)
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusOK, generated.LeagueResponse{
+		League: &generated.League{
+			Id:        dbResult.ID.String(),
+			Name:      dbResult.Name,
+			Slug:      dbResult.Slug,
+			Location:  dbResult.Location,
+			OwnerId:   dbResult.Owner.ID.String(),
+			CreatedAt: utils.FormatTime(dbResult.CreatedAt),
+			UpdatedAt: utils.FormatTime(dbResult.UpdatedAt),
+		},
+	})
+}
