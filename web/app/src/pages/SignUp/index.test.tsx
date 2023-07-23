@@ -5,6 +5,7 @@ import {Api, useAuth, User, UsersApi} from "../../api";
 import {faker} from "@faker-js/faker";
 import {Simulate} from "react-dom/test-utils";
 import React from "react";
+import {fake} from "../../test";
 
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -28,14 +29,7 @@ describe('SignUpPage', () => {
     await result.findByText("Register")
   })
   it('redirects to /authenticated if user is logged in', async () => {
-    const mockUser: User = {
-      name: faker.name.fullName(),
-      email: faker.internet.email(),
-      id: faker.datatype.uuid(),
-      role: "user",
-      created_at: faker.date.recent(5).toISOString(),
-      updated_at: faker.date.recent(1).toISOString()
-    }
+    const mockUser = fake.user()
     mockUseAuth.mockReturnValue({
       user: mockUser
     })
@@ -99,13 +93,11 @@ describe('SignUpPage', () => {
     expect(error).toBeInTheDocument()
   })
   it('shows error if registration fails', async () => {
+    const mockError = fake.errorResponse()
+
     mockUseAuth.mockReturnValue({user: undefined})
     jest.mocked(UsersApi).prototype.usersRegisterPost.mockRejectedValue(false)
-    mockApi.prototype.parseError.mockReturnValue({
-      status: 400,
-      title: "Bad Request",
-      detail: "username is already taken"
-    })
+    mockApi.prototype.parseError.mockReturnValue(mockError)
     mockApi.prototype.userApi.mockReturnValue(new UsersApi())
 
     const result = render(
@@ -122,7 +114,7 @@ describe('SignUpPage', () => {
       result.getByTestId("create account").click()
     })
 
-    const error = await result.findByText("username is already taken")
+    const error = await result.findByText(mockError.detail)
     expect(error).toBeInTheDocument()
     expect(logSpy).toBeCalled()
   })
