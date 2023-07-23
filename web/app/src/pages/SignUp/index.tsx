@@ -11,8 +11,9 @@ import {Api, UserRegister, useAuth} from "../../api"
 import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
-import AuthLayout, {AlertData} from "../../layouts/auth";
+import AuthLayout from "../../layouts/auth";
 import {Link as ReactLink} from "react-router-dom";
+import {AlertData} from "../../components/Alert";
 
 const api = new Api();
 
