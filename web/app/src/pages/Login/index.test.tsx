@@ -5,6 +5,7 @@ import React from "react";
 import {Api, useAuth, User} from "../../api";
 import {faker} from "@faker-js/faker";
 import {Simulate} from "react-dom/test-utils";
+import {fake} from "../../test";
 
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -47,14 +48,7 @@ describe('LoginPage', () => {
   })
 
   it('redirects to /authenticated if user is signed-in', async () => {
-    const mockUser: User = {
-      name: faker.name.fullName(),
-      email: faker.internet.email(),
-      id: faker.datatype.uuid(),
-      role: "user",
-      created_at: faker.date.recent(5).toISOString(),
-      updated_at: faker.date.recent(1).toISOString()
-    }
+    const mockUser = fake.user()
     mockUseAuth.mockReturnValue({
       user: mockUser
     })
@@ -102,13 +96,11 @@ describe('LoginPage', () => {
   })
 
   it('displays error message if login fails', async () => {
+    const mockError = fake.errorResponse()
+
     mockUseAuth.mockReturnValue({user: undefined})
     mockApi.prototype.login.mockRejectedValue(false)
-    mockApi.prototype.parseError.mockReturnValue({
-      status: 401,
-      title: "Unauthorized",
-      detail: "Invalid username or password"
-    })
+    mockApi.prototype.parseError.mockReturnValue(mockError)
 
     const result = render(
       <MemoryRouter>
@@ -124,7 +116,7 @@ describe('LoginPage', () => {
       result.getByTestId("login").click()
     })
 
-    const errorMessage = await result.findByText("Invalid username or password")
+    const errorMessage = await result.findByText(mockError.detail)
     expect(errorMessage).toBeInTheDocument()
     expect(logSpy).toBeCalled()
 
