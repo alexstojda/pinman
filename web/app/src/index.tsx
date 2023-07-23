@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './pages/App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {ChakraProvider, ColorModeScript} from "@chakra-ui/react";
@@ -9,6 +8,7 @@ import Login from "./pages/Login";
 import theme from "./theme"
 import AuthTest from "./pages/AuthTest";
 import SignUpPage from "./pages/SignUp";
+import LeagueListPage from "./pages/LeagueList";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -26,7 +26,7 @@ function Router() {
   return (
     <BrowserRouter basename={'/app'}>
       <Routes>
-        <Route path="/" element={<App/>}/>
+        <Route path="/" element={<LeagueListPage/>}/>
         <Route path={"/login"} element={<Login/>}/>
         <Route path={"/signup"} element={<SignUpPage/>}/>
         <Route path={"/authenticated"} element={<AuthTest/>}/>

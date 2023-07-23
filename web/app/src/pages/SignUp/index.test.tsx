@@ -1,7 +1,7 @@
 import SignUpPage from "./index";
 import {act, render, RenderResult} from "@testing-library/react";
 import {MemoryRouter} from "react-router-dom";
-import {Api, useAuth, User, UsersApi} from "../../api";
+import {Api, useAuth, UsersApi} from "../../api";
 import {faker} from "@faker-js/faker";
 import {Simulate} from "react-dom/test-utils";
 import React from "react";
