@@ -1,1 +1,1 @@
-export * from './apiUrl'
+export * from './slugify'

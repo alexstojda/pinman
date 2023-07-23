@@ -2,7 +2,7 @@ import {act, render, RenderResult} from "@testing-library/react";
 import LoginPage from "./index";
 import {MemoryRouter} from "react-router-dom";
 import React from "react";
-import {Api, useAuth, User} from "../../api";
+import {Api, useAuth} from "../../api";
 import {faker} from "@faker-js/faker";
 import {Simulate} from "react-dom/test-utils";
 import {fake} from "../../test";

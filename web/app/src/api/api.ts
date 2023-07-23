@@ -1,4 +1,4 @@
-import {AuthApi, Configuration, ErrorResponse, UserLogin, UsersApi} from "./generated";
+import {AuthApi, Configuration, ErrorResponse, LeaguesApi, UserLogin, UsersApi} from "./generated";
 import {AxiosError} from "axios";
 
 export const TOKEN_KEY = 'token';
@@ -105,8 +105,12 @@ export class Api {
     return new AuthApi(this.configuration());
   }
 
+  public leaguesApi(): LeaguesApi {
+    return new LeaguesApi(this.configuration());
+  }
+
   public parseError(e: AxiosError): ErrorResponse {
-    if (e.isAxiosError && e.response)
+    if (e.isAxiosError && e.response && e.response.data)
       return e.response.data as ErrorResponse
     throw new Error("parseError: could not parse error")
   }
