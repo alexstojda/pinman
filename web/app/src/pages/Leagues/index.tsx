@@ -22,6 +22,7 @@ import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
 import Alert, {AlertData} from "../../components/Alert";
 import LeagueForm from "./Form";
+import Footer from "../../layouts/footer";
 
 const api: Api = new Api();
 
@@ -120,6 +121,7 @@ export default function LeaguesPage(props: LeagueListPageProps) {
           }
         </HStack>
         {renderList()}
+        <Footer/>
       </Container>
     </>
   )

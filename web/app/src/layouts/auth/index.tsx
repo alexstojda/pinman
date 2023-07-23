@@ -1,7 +1,7 @@
 import {PropsWithChildren} from "react";
 import {Avatar, Box, Flex, Heading, Stack} from "@chakra-ui/react";
-import ColorToggle from "../../components/ColorToggle";
 import Alert, {AlertData} from "../../components/Alert";
+import Footer from "../footer";
 
 type AuthLayoutProps = PropsWithChildren & {
   title?: string;
@@ -41,9 +41,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
           {props.children}
         </Box>
       </Stack>
-      <Box>
-        <ColorToggle/>
-      </Box>
+      <Footer/>
     </Flex>
   )
 }

@@ -1,7 +1,7 @@
 import {render} from "@testing-library/react";
 import React from "react";
 import LeaguesPage from "./index";
-import {Api, LeaguesApi} from "../../api";
+import {Api, LeaguesApi, useAuth} from "../../api";
 import {fake} from "../../test";
 import {MemoryRouter} from "react-router-dom";
 
@@ -87,6 +87,10 @@ describe('LeaguesPage', () => {
     expect(error).toBeInTheDocument()
   })
   it('navigates to create league page when button is pressed', async () => {
+    jest.mocked(useAuth).mockReturnValue({
+      user: fake.user()
+    })
+
     jest.mocked(LeaguesApi).prototype.leaguesGet.mockResolvedValue({
       config: {},
       data: {
