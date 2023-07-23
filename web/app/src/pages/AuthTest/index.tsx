@@ -1,6 +1,7 @@
 import {Button} from "@chakra-ui/react";
 import {Api, useAuth} from "../../api";
 import {useNavigate} from "react-router-dom";
+import Footer from "../../layouts/footer";
 
 export default function AuthTest() {
   const {user} = useAuth({requireAuth: true});
@@ -18,6 +19,7 @@ export default function AuthTest() {
       }}>
         Logout
       </Button>
+      <Footer/>
     </>
   )
 }
