@@ -1,16 +1,11 @@
 import {PropsWithChildren} from "react";
-import {Alert, AlertDescription, AlertIcon, AlertTitle, Avatar, Box, Flex, Heading, Stack} from "@chakra-ui/react";
+import {Avatar, Box, Flex, Heading, Stack} from "@chakra-ui/react";
 import ColorToggle from "../../components/ColorToggle";
+import Alert, {AlertData} from "../../components/Alert";
 
 type AuthLayoutProps = PropsWithChildren & {
   title?: string;
   alert?: AlertData
-}
-
-export type AlertData = {
-  status: 'error' | 'success';
-  title: string;
-  detail: string;
 }
 
 export default function AuthLayout(props: AuthLayoutProps) {
@@ -35,11 +30,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
         }
 
         {props.alert &&
-          <Alert status={props.alert.status}>
-            <AlertIcon/>
-            <AlertTitle>{props.alert.title}</AlertTitle>
-            <AlertDescription>{props.alert.detail}</AlertDescription>
-          </Alert>
+          <Alert status={props.alert.status} title={props.alert.title} detail={props.alert.detail}/>
         }
 
         <Box
