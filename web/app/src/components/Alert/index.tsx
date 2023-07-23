@@ -6,12 +6,16 @@ export type AlertData = {
   detail: string;
 }
 
-export default function Alert(props: AlertData) {
+type AlertProps = {
+  alert: AlertData
+}
+
+export default function Alert(props: AlertProps) {
   return (
-    <ChakraAlert status={props.status}>
+    <ChakraAlert status={props.alert.status}>
       <AlertIcon/>
-      <AlertTitle>{props.title}</AlertTitle>
-      <AlertDescription>{props.detail}</AlertDescription>
+      <AlertTitle>{props.alert.title}</AlertTitle>
+      <AlertDescription>{props.alert.detail}</AlertDescription>
     </ChakraAlert>
   )
 }
