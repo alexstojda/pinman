@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {ChakraProvider, ColorModeScript} from "@chakra-ui/react";
 import Login from "./pages/Login";
 import theme from "./theme"
 import AuthTest from "./pages/AuthTest";
 import SignUpPage from "./pages/SignUp";
-import LeagueListPage from "./pages/LeagueList";
+import LeagueListPage from "./pages/Leagues";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -23,10 +23,13 @@ root.render(
 );
 
 function Router() {
+
   return (
     <BrowserRouter basename={'/app'}>
       <Routes>
-        <Route path="/" element={<LeagueListPage/>}/>
+        <Route path="/" element={<Navigate to={'/leagues'}/>}/>
+        <Route path="/leagues" element={<LeagueListPage/>}/>
+        <Route path={"/leagues/create"} element={<LeagueListPage createFormOpen={true} />}/>
         <Route path={"/login"} element={<Login/>}/>
         <Route path={"/signup"} element={<SignUpPage/>}/>
         <Route path={"/authenticated"} element={<AuthTest/>}/>

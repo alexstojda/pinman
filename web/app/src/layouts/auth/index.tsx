@@ -30,7 +30,7 @@ export default function AuthLayout(props: AuthLayoutProps) {
         }
 
         {props.alert &&
-          <Alert status={props.alert.status} title={props.alert.title} detail={props.alert.detail}/>
+          <Alert alert={props.alert}/>
         }
 
         <Box

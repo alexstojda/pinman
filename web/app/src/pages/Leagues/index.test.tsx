@@ -1,6 +1,6 @@
 import {render} from "@testing-library/react";
 import React from "react";
-import LeagueListPage from "./index";
+import LeaguesPage from "./index";
 import {Api, LeaguesApi} from "../../api";
 import {fake} from "../../test";
 import {MemoryRouter} from "react-router-dom";
@@ -20,8 +20,7 @@ beforeEach(() => {
   mockApi.prototype.parseError.mockReset()
 })
 
-
-describe('LeagueListPage', () => {
+describe('LeaguesPage', () => {
   it('renders leagues from API', async () => {
     const mockLeagues = Array.from({length: 5}, () => fake.league())
 
@@ -39,7 +38,7 @@ describe('LeagueListPage', () => {
 
     const result = render(
       <MemoryRouter>
-        <LeagueListPage/>
+        <LeaguesPage/>
       </MemoryRouter>
     )
 
@@ -49,7 +48,7 @@ describe('LeagueListPage', () => {
     const leagueCards = await result.findAllByTestId("league-card")
     expect(leagueCards).toHaveLength(mockLeagues.length)
 
-    await mockLeagues.forEach((league) => {
+    mockLeagues.forEach((league) => {
       expect(result.getByText(league.name)).toBeInTheDocument()
       expect(result.getByText(league.location)).toBeInTheDocument()
     })
@@ -63,7 +62,7 @@ describe('LeagueListPage', () => {
 
     const result = render(
       <MemoryRouter>
-        <LeagueListPage/>
+        <LeaguesPage/>
       </MemoryRouter>
     )
 
@@ -80,7 +79,7 @@ describe('LeagueListPage', () => {
 
     const result = render(
       <MemoryRouter>
-        <LeagueListPage/>
+        <LeaguesPage/>
       </MemoryRouter>
     )
 
@@ -102,7 +101,7 @@ describe('LeagueListPage', () => {
 
     const result = render(
       <MemoryRouter>
-        <LeagueListPage/>
+        <LeaguesPage/>
       </MemoryRouter>
     )
 
