@@ -1,3 +1,13 @@
+# [0.4.0](https://github.com/alexstojda/pinman/compare/v0.3.0...v0.4.0) (2023-07-24)
+
+
+### Features
+
+* **frontend:** Add create league form ([1f655df](https://github.com/alexstojda/pinman/commit/1f655df387870b43d8311f415e318b766c36c9f8))
+* **frontend:** List leagues on homepage ([87a81cf](https://github.com/alexstojda/pinman/commit/87a81cfc1e72f790826849e064351a22017b22f6))
+
+
+
 # [0.3.0](https://github.com/alexstojda/pinman/compare/v0.2.6...v0.3.0) (2023-07-24)
 
 
@@ -37,15 +47,6 @@
 ### Bug Fixes
 
 * Adjust config to deploy to railway ([e1a3cf0](https://github.com/alexstojda/pinman/commit/e1a3cf0521075e69bdf43f08a6190bad075fe77b))
-
-
-
-## [0.2.3](https://github.com/alexstojda/pinman/compare/v0.2.2...v0.2.3) (2023-01-03)
-
-
-### Bug Fixes
-
-* Refactor code for testability and add tests ([#16](https://github.com/alexstojda/pinman/issues/16)) ([d92ead0](https://github.com/alexstojda/pinman/commit/d92ead0a691fba8e6cdbd57155391dab042c970f))
 
 
 
