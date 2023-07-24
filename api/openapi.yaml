@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: A web application for the management of a pinball league
   title: PinMan - Pinball League Management
-  version: 0.2.6
+  version: 0.3.0
 servers:
   - url: http://localhost:8080/api
 paths:
@@ -155,13 +155,13 @@ paths:
           name: slug
           required: true
           schema:
-              type: string
+            type: string
       responses:
         "200":
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/leagueResponse'
+                $ref: '#/components/schemas/leagueResponse'
           description: Successful response
         "400":
           $ref: "#/components/responses/badRequest"
@@ -173,7 +173,6 @@ paths:
           $ref: "#/components/responses/notFound"
       tags:
         - leagues
-
 components:
   responses:
     unauthorized:
@@ -225,11 +224,11 @@ components:
         slug:
           type: string
           x-oapi-codegen-extra-tags:
-              binding: requred
+            binding: requred
         ownerId:
           type: string
           x-oapi-codegen-extra-tags:
-              binding: requred
+            binding: requred
         location:
           type: string
           x-oapi-codegen-extra-tags:
@@ -291,7 +290,6 @@ components:
         - role
         - created_at
         - updated_at
-
     ###
     # Generic Request/Response Schemas
     ###
@@ -310,7 +308,6 @@ components:
         meta:
           type: object
       type: object
-
     ###
     # User/Authentication Request/Response Schemas
     ###
@@ -378,7 +375,6 @@ components:
       required:
         - expire
         - access_token
-
     ###
     # League Request/Response Schemas
     ###

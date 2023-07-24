@@ -1,3 +1,14 @@
+# [0.3.0](https://github.com/alexstojda/pinman/compare/v0.2.6...v0.3.0) (2023-07-24)
+
+
+### Features
+
+* **backend:** Add create league endpoint ([efbbe0a](https://github.com/alexstojda/pinman/commit/efbbe0a8961d6626c56cf6bb6d791a3e91a5dacc))
+* **backend:** Add get league endpoint ([31632f0](https://github.com/alexstojda/pinman/commit/31632f08c559d51961ac0343efcf011729e70062))
+* **backend:** Add list leagues endpoint ([3b7302c](https://github.com/alexstojda/pinman/commit/3b7302ccc29732f234e574632bab98aa844f6e08))
+
+
+
 ## [0.2.6](https://github.com/alexstojda/pinman/compare/v0.2.5...v0.2.6) (2023-01-06)
 
 
@@ -35,15 +46,6 @@
 ### Bug Fixes
 
 * Refactor code for testability and add tests ([#16](https://github.com/alexstojda/pinman/issues/16)) ([d92ead0](https://github.com/alexstojda/pinman/commit/d92ead0a691fba8e6cdbd57155391dab042c970f))
-
-
-
-## [0.2.2](https://github.com/alexstojda/pinman/compare/v0.2.1...v0.2.2) (2023-01-02)
-
-
-### Bug Fixes
-
-* **ci:** restore contents write permissions ([004b592](https://github.com/alexstojda/pinman/commit/004b59204668c5ff678b843cea2a93e7c07f580a))
 
 
 
