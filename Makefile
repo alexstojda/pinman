@@ -36,16 +36,16 @@ build: build-backend build-frontend
 
 build-backend:
 	@mkdir -p ./build
-	@go build -v -o ./build/pinman ./cmd/pinman/
+	@go build -v -o ./build/pinman main.go
 
 build-frontend:
 	@cd $(FRONTEND_DIR) && yarn build
 
 run: clean generate build-frontend
-	@SPA_PATH=./web/app/build go run cmd/pinman/main.go
+	@SPA_PATH=./web/app/build go run main.go
 
 run-backend:
-	@go run cmd/pinman/main.go
+	@go run main.go
 
 run-database:
 	@docker compose up -d postgres
@@ -57,6 +57,8 @@ test: test-backend test-frontend
 
 test-setup:
 	@go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+	@go install -mod=mod github.com/vektra/mockery/v2@v2.32.0
+	@mockery
 
 test-frontend:
 	@cd $(FRONTEND_DIR) && yarn test

@@ -1,0 +1,9 @@
+inpackage: true
+keeptree: true
+dir: "{{.InterfaceDir}}"
+with-expecter: false
+packages:
+  pinman/internal/utils:
+    interfaces:
+      # select the interfaces you want mocked
+      HttpDoer: {}

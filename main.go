@@ -18,7 +18,7 @@ func main() {
 		log.Fatal().Err(err).Msg("could not connect to DB")
 	}
 
-	err = gormDb.AutoMigrate(&models.User{}, &models.League{})
+	err = models.Migrate(gormDb)
 	if err != nil {
 		log.Fatal().Err(err).Msg("migration failed")
 	}
