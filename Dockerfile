@@ -74,10 +74,10 @@ COPY --chown=golang:root go.mod go.sum Makefile ./
 
 RUN make mod
 
-COPY --chown=golang:root cmd ./cmd
+COPY --chown=golang:root main.go ./
 COPY --chown=golang:root internal ./internal
 COPY --from=go-gen /out/ internal/app/generated/
-RUN go build -v -o pinman ./cmd/pinman/
+RUN go build -v -o pinman main.go
 
 ENTRYPOINT ["make"]
 CMD ["test"]
