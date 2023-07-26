@@ -6,8 +6,10 @@ import (
 )
 
 type League struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primary_key"`
-	Name      string    `gorm:"type:varchar(255);not null"`
+	ID   uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primary_key"`
+	Name string    `gorm:"type:varchar(255);not null"`
+
+	// TODO: Limit to 20 characters and update request validation accordingly
 	Slug      string    `gorm:"type:varchar(255);not null;uniqueIndex"`
 	OwnerID   uuid.UUID `gorm:"type:uuid;not null"`
 	Owner     User

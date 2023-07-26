@@ -1,5 +1,4 @@
-inpackage: true
-keeptree: true
+inpackage: True
 dir: "{{.InterfaceDir}}"
 with-expecter: false
 packages:
@@ -7,3 +6,6 @@ packages:
     interfaces:
       # select the interfaces you want mocked
       HttpDoer: {}
+  pinman/internal/clients/pinballmap:
+    interfaces:
+      ClientInterface: {}
