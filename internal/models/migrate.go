@@ -9,6 +9,7 @@ func Migrate(gormDb *gorm.DB) error {
 	err := gormDb.AutoMigrate(
 		&User{},
 		&League{},
+		&Location{},
 	)
 	if err != nil {
 		return fmt.Errorf("migrating models: %w", err)

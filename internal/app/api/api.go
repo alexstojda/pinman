@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"pinman/internal/app/api/league"
+	"pinman/internal/app/api/location"
 	"pinman/internal/app/api/user"
 )
 
@@ -14,8 +15,9 @@ type AuthHandlers struct {
 // Server
 // implements generated.ServerInterface
 type Server struct {
-	User   *user.Controller
-	League *league.Controller
+	User     *user.Controller
+	League   *league.Controller
+	Location *location.Controller
 	AuthHandlers
 }
 
@@ -45,4 +47,16 @@ func (s *Server) GetLeagues(c *gin.Context) {
 
 func (s *Server) GetLeaguesSlug(c *gin.Context, slug string) {
 	s.League.GetLeagueWithSlug(c, slug)
+}
+
+func (s *Server) GetLocations(c *gin.Context) {
+	s.Location.ListLocations(c)
+}
+
+func (s *Server) PostLocations(c *gin.Context) {
+	s.Location.CreateLocation(c)
+}
+
+func (s *Server) GetLocationsSlug(c *gin.Context, slug string) {
+	s.Location.GetLocationWithSlug(c, slug)
 }

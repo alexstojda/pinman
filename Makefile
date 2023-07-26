@@ -77,4 +77,10 @@ keys:
 	@rm -r ./token ./token.pub
 
 test-backend-cov: test-setup
-	@ginkgo --cover --race --json-report=report.json --output-dir=reports/go --skip-package generated ./...
+	@ginkgo --cover \
+		--race \
+		--json-report=report.json \
+		--output-dir=reports/go \
+		--skip-package generated \
+		--skip-file mock \
+		./...
