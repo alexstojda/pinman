@@ -42,18 +42,19 @@ var (
 
 // Slugify function returns slugifies string "s"
 func Slugify(s string, maxLength ...int) string {
+	if len(maxLength) > 0 && maxLength[0] > 0 && len(s) > maxLength[0] {
+		s = s[:maxLength[0]]
+	}
+
 	for _, r := range rExps {
 		s = r.re.ReplaceAllString(s, r.ch)
 	}
 
 	s = strings.ToLower(s)
+	s = strings.TrimSpace(s)
 	s = spacereg.ReplaceAllString(s, "-")
 	s = noncharreg.ReplaceAllString(s, "")
 	s = minusrepeatreg.ReplaceAllString(s, "-")
-
-	if len(maxLength) > 0 && maxLength[0] > 0 && len(s) > maxLength[0] {
-		s = s[:maxLength[0]]
-	}
 
 	return s
 }
