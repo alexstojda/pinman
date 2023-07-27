@@ -2,9 +2,9 @@ inpackage: True
 dir: "{{.InterfaceDir}}"
 with-expecter: false
 packages:
-  pinman/internal/utils:
+  pinman/internal/clients/generic:
     interfaces:
-      # select the interfaces you want mocked
+      ClientInterface: {}
       HttpDoer: {}
   pinman/internal/clients/pinballmap:
     interfaces:
