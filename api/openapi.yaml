@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: A web application for the management of a pinball league
   title: PinMan - Pinball League Management
-  version: 0.4.0
+  version: 0.5.0
 servers:
   - url: http://localhost:8080/api
 paths:
@@ -60,7 +60,7 @@ paths:
     get:
       description: Refresh an access token
       security:
-        - pinmanAuth: [ ]
+        - pinmanAuth: []
       responses:
         "200":
           content:
@@ -246,7 +246,6 @@ paths:
           $ref: "#/components/responses/notFound"
       tags:
         - locations
-
 components:
   responses:
     unauthorized:
@@ -364,7 +363,6 @@ components:
         - role
         - created_at
         - updated_at
-
     location:
       example:
         id: id
@@ -412,7 +410,6 @@ components:
         - pinball_map_id
         - created_at
         - updated_at
-
     ###
     # Generic Request/Response Schemas
     ###
@@ -552,7 +549,6 @@ components:
         - name
         - location
         - slug
-
     ###
     # Location Request/Response Schemas
     ###
@@ -599,7 +595,6 @@ components:
       type: object
       required:
         - pinball_map_id
-
   securitySchemes:
     pinmanAuth:
       flows:

@@ -1,3 +1,13 @@
+# [0.5.0](https://github.com/alexstojda/pinman/compare/v0.4.0...v0.5.0) (2023-07-27)
+
+
+### Features
+
+* **api-clients:** Create api client for pinball map API to fetch locations ([05fc2a6](https://github.com/alexstojda/pinman/commit/05fc2a63097853bde69343e2a181cdaf041dcd55))
+* **locations:** Add API for Create/Get/List locations ([610c284](https://github.com/alexstojda/pinman/commit/610c284761426dac48672092c0651dd6bfa3e3a0))
+
+
+
 # [0.4.0](https://github.com/alexstojda/pinman/compare/v0.3.0...v0.4.0) (2023-07-24)
 
 
@@ -38,15 +48,6 @@
 ### Bug Fixes
 
 * Correct order of precedence for config vars ([0ab991c](https://github.com/alexstojda/pinman/commit/0ab991c6199dbb6a8f5e7fc2dc1cec159fa41a09))
-
-
-
-## [0.2.4](https://github.com/alexstojda/pinman/compare/v0.2.3...v0.2.4) (2023-01-04)
-
-
-### Bug Fixes
-
-* Adjust config to deploy to railway ([e1a3cf0](https://github.com/alexstojda/pinman/commit/e1a3cf0521075e69bdf43f08a6190bad075fe77b))
 
 
 
