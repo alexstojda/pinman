@@ -1,17 +1,18 @@
 package pinballmap
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"net/url"
-	"pinman/internal/utils"
+	"pinman/internal/clients/generic"
 )
 
+const apiHost = "https://pinballmap.com"
+
 type Client struct {
-	apiHost   string
-	apiScheme string
-	client    utils.HttpDoer
+	apiHost       string
+	genericClient generic.ClientInterface
 }
 
 type ClientInterface interface {
@@ -21,32 +22,16 @@ type ClientInterface interface {
 
 func NewClient() *Client {
 	return &Client{
-		apiScheme: "https",
-		apiHost:   "pinballmap.com",
-		client:    http.DefaultClient,
+		apiHost:       apiHost,
+		genericClient: generic.NewClient(),
 	}
 }
 
-func NewClientWithHttpClient(client utils.HttpDoer) *Client {
+func NewClientWithGenericClient(genericClient generic.ClientInterface) *Client {
 	return &Client{
-		apiScheme: "https",
-		apiHost:   "pinballmap.com",
-		client:    client,
+		apiHost:       apiHost,
+		genericClient: genericClient,
 	}
-}
-
-func (c *Client) NewUrl(path string, params url.Values) *url.URL {
-	urrl := &url.URL{
-		Scheme: c.apiScheme,
-		Host:   c.apiHost,
-		Path:   path,
-	}
-
-	if params != nil {
-		urrl.RawQuery = params.Encode()
-	}
-
-	return urrl
 }
 
 type Location struct {
@@ -59,7 +44,7 @@ type Location struct {
 	NumMachines int    `json:"num_machines"`
 }
 
-type LocationResponse struct {
+type LocationsResponse struct {
 	Locations []Location `json:"locations"`
 }
 
@@ -70,72 +55,54 @@ type ErrorResponse struct {
 // GetLocations retrieves all locations from the Pinball Map API matching the given name filter.
 // https://pinballmap.com/api/v1/docs/1.0/locations/index.html
 func (c *Client) GetLocations(nameFilter string) ([]Location, error) {
-	params := url.Values{}
+	params := &url.Values{}
 	params.Add("by_location_name", nameFilter)
 	params.Add("no_details", "true")
 
-	req, err := http.NewRequest("GET", c.NewUrl("/api/v1/locations.json", params).String(), nil)
+	req, err := http.NewRequest("GET", generic.FormatRequestUrl(c.apiHost, "/api/v1/locations.json", params), nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("preparing request: %w", err)
 	}
 
 	req.Header.Set("Accept", "application/json")
 
-	resp, err := c.client.Do(req)
+	var response LocationsResponse
+	var errorResponse ErrorResponse
+	code, err := c.genericClient.Do(req, &response, &errorResponse)
 	if err != nil {
-		return nil, fmt.Errorf("doing request: %w", err)
+		log.Error().Err(err).Msg("failed to get locations")
+		return nil, fmt.Errorf("performing request: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		errResp := ErrorResponse{}
-		err := json.NewDecoder(resp.Body).Decode(&errResp)
-		if err != nil {
-			return nil, fmt.Errorf("decoding error response: %w", err)
-		}
-
-		return nil, fmt.Errorf("unexpected response: %s", errResp.Errors)
+	if code != http.StatusOK {
+		return nil, fmt.Errorf("request failed with error: %s", errorResponse.Errors)
 	}
 
-	//goland:noinspection GoUnhandledErrorResult
-	defer resp.Body.Close()
-
-	var locations LocationResponse
-	if err := json.NewDecoder(resp.Body).Decode(&locations); err != nil {
-		return nil, fmt.Errorf("retrieving locations: %w", err)
-	}
-
-	return locations.Locations, nil
+	return response.Locations, nil
 }
 
 func (c *Client) GetLocation(id int) (*Location, error) {
-	req, err := http.NewRequest("GET", c.NewUrl(fmt.Sprintf("/api/v1/locations/%d.json", id), nil).String(), nil)
+	req, err := http.NewRequest(
+		"GET",
+		generic.FormatRequestUrl(c.apiHost, fmt.Sprintf("/api/v1/locations/%d.json", id)),
+		nil,
+	)
 	if err != nil {
-		return nil, fmt.Errorf("creating request: %w", err)
+		return nil, fmt.Errorf("preparing request: %w", err)
 	}
 
 	req.Header.Set("Accept", "application/json")
 
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("doing request: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		errResp := ErrorResponse{}
-		err := json.NewDecoder(resp.Body).Decode(&errResp)
-		if err != nil {
-			return nil, fmt.Errorf("decoding error response: %w", err)
-		}
-
-		return nil, fmt.Errorf("unexpected response: %s", errResp.Errors)
-	}
-
-	//goland:noinspection GoUnhandledErrorResult
-	defer resp.Body.Close()
-
 	var location Location
-	if err := json.NewDecoder(resp.Body).Decode(&location); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
+	var errorResponse ErrorResponse
+	code, err := c.genericClient.Do(req, &location, &errorResponse)
+	if err != nil {
+		log.Error().Err(err).Int("pinballMapLocationId", id).Msg("failed to get location")
+		return nil, fmt.Errorf("performing request: %w", err)
+	}
+
+	if code != http.StatusOK {
+		return nil, fmt.Errorf("request failed with error: %s", errorResponse.Errors)
 	}
 
 	return &location, nil
