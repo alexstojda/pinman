@@ -10,10 +10,11 @@ type League struct {
 	Name string    `gorm:"type:varchar(255);not null"`
 
 	// TODO: Limit to 20 characters and update request validation accordingly
-	Slug      string    `gorm:"type:varchar(255);not null;uniqueIndex"`
-	OwnerID   uuid.UUID `gorm:"type:uuid;not null"`
-	Owner     User
-	Location  string `gorm:"type:varchar(255)"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Slug       string `gorm:"type:varchar(255);not null;uniqueIndex"`
+	Owner      User
+	OwnerID    uuid.UUID `gorm:"type:uuid;not null"`
+	Location   Location
+	LocationID uuid.UUID `gorm:"type:uuid;not null"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
