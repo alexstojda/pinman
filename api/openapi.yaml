@@ -284,7 +284,7 @@ components:
         id: id
         slug: slug
         ownerId: ownerId
-        location: location
+        locationId: locationId
       properties:
         id:
           type: string
@@ -302,7 +302,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             binding: requred
-        location:
+        locationId:
           type: string
           x-oapi-codegen-extra-tags:
             binding: requred
@@ -319,7 +319,7 @@ components:
         - name
         - slug
         - ownerId
-        - location
+        - locationId
         - created_at
         - updated_at
     user:
@@ -507,7 +507,7 @@ components:
           id: id
           slug: slug
           ownerId: ownerId
-          location: location
+          locationId: locationId
       properties:
         league:
           $ref: '#/components/schemas/league'
@@ -521,7 +521,7 @@ components:
             id: id
             slug: slug
             ownerId: ownerId
-            location: location
+            locationId: locationId
       properties:
         leagues:
           type: array
@@ -536,7 +536,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             binding: required
-        location:
+        locationId:
           type: string
           x-oapi-codegen-extra-tags:
             binding: required
@@ -547,7 +547,7 @@ components:
       type: object
       required:
         - name
-        - location
+        - locationId
         - slug
     ###
     # Location Request/Response Schemas
