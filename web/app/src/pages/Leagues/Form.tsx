@@ -10,13 +10,13 @@ import {
   Spacer,
   Stack,
 } from "@chakra-ui/react";
-import React, {ReactNode, useEffect, useState} from "react";
-import {Api, LeagueCreate, pinballMap, useAuth} from "../../api";
+import React, {ReactNode, useState} from "react";
+import {Api, ErrorResponse, LeagueCreate, pinballMap, useAuth} from "../../api";
 import {slugify} from "../../helpers";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
 import Alert, {AlertData} from "../../components/Alert";
-import {ActionMeta, Select} from "chakra-react-select";
+import {LocationOption, LocationSelect} from "../../components/LocationSelect";
 
 export type LeagueFormProps = {
   mode: 'create' | 'edit'
@@ -24,7 +24,6 @@ export type LeagueFormProps = {
 }
 
 const pinmanApi = new Api();
-const pinballMapApi = new pinballMap.Api();
 
 export default function LeagueForm(props: LeagueFormProps) {
   const navigate = useNavigate();
@@ -32,16 +31,14 @@ export default function LeagueForm(props: LeagueFormProps) {
   useAuth({requireAuth: true})
 
   const [alert, setAlert] = useState<AlertData>()
-
+  const [locationValue, setLocationValue] = useState<LocationOption>()
   const [slugModified, setSlugModified] = useState<boolean>(false)
   const [slugError, setSlugError] = useState<ReactNode | undefined>(undefined)
-
   const [leagueData, setLeagueData] = useState<LeagueCreate>({
     name: "",
     locationId: "",
     slug: "",
   });
-
 
   async function submitForm() {
     let locationId = ""
@@ -117,127 +114,17 @@ export default function LeagueForm(props: LeagueFormProps) {
     }
   }
 
-  function onLocationChange(newValue: any, actionMeta: ActionMeta<any>) {
+  function onLocationChange(newValue: LocationOption) {
     setLocationValue(newValue)
   }
 
-  type LocationOption = {
-    label: string
-    value: string
-    type: "pinman" | "pinmap"
-    pinballMapId: string
-  }
-
-  type LocationOptionGroup = {
-    label: string
-    options: LocationOption[]
-  }
-
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
-  const [locationSelectFilterValue, setLocationSelectFilterValue] = useState<string>("")
-  const [locationSelectIsLoading, setLocationSelectIsLoading] = useState<boolean>(false)
-  const [pinmapLocations, setPinmapLocations] = useState<LocationOption[]>([])
-  const [pinmanLocations, setPinmanLocations] = useState<LocationOption[]>([])
-  const [locationOptions, setLocationOptions] = useState<LocationOptionGroup[]>([])
-  const [locationValue, setLocationValue] = useState<LocationOption>()
-
-  useEffect(() => {
-    const locationOptions = []
-
-    if (pinmanLocations.length > 0) {
-      locationOptions.push({
-        label: 'Known Locations',
-        options: pinmanLocations
-      })
-    }
-
-    if (pinmapLocations.length > 0) {
-      locationOptions.push({
-        label: 'Pinball Map Locations (Create New Location)',
-        options: pinmapLocations.filter((location: LocationOption) => {
-          return pinmanLocations.find((pinmanLocation: LocationOption) => {
-            return pinmanLocation.pinballMapId === location.pinballMapId
-          }) === undefined
-        })
-      })
-    }
-
-    setLocationOptions(locationOptions)
-  }, [pinmanLocations, pinmapLocations]);
-
-  function updatePinmanLocations() {
-    pinmanApi.locationsApi().locationsGet().then((locations) => {
-      setPinmanLocations(
-        locations.data.locations.map((location) : LocationOption => ({
-            label: location.name,
-            value: location.id,
-            type: "pinman",
-            pinballMapId: location.pinball_map_id.toString()
-          })
-        ))
-    }).catch((e: AxiosError) => {
-      const err = pinmanApi.parseError(e)
-      console.error(err)
-      setAlert({
-        status: "error",
-        title: err.title,
-        detail: err.detail
-      })
-    }).finally(() => {
-      setLocationSelectIsLoading(false)
+  function onSelectError(e: ErrorResponse) {
+    setAlert({
+      status: "error",
+      title: e.title,
+      detail: e.detail
     })
   }
-
-  function updatePinballMapLocations(nameFilter: string) {
-    if (nameFilter.length < 4) {
-      return
-    }
-
-    pinballMapApi.locationsGet(nameFilter).then((locations) => {
-      setPinmapLocations(
-        locations.map((location): LocationOption => ({
-            label: location.name,
-            value: location.id.toString(),
-            type: "pinmap",
-            pinballMapId: location.id.toString()
-          })
-        ))
-    }).catch((e: AxiosError) => {
-      const err = pinballMapApi.parseError(e)
-      console.error(err)
-      setAlert({
-        status: "error",
-        title: "Error loading locations",
-        detail: err.errors
-      })
-    }).finally(() => {
-      setLocationSelectIsLoading(false)
-    })
-  }
-
-  // useEffect to listen for changes in the input value
-  useEffect(() => {
-    if (locationSelectFilterValue.length < 4) {
-      setLocationSelectIsLoading(false)
-    } else {
-      setLocationSelectIsLoading(true)
-    }
-    // Clear the previous timeout on each input change
-    if (timeoutId)
-      clearTimeout(timeoutId);
-
-    // Start a new timeout that will call the delayedFunction after 3 seconds of inactivity
-    const newTimeoutId = setTimeout(() => {
-      updatePinmanLocations()
-      updatePinballMapLocations(locationSelectFilterValue)
-    }, 5000);
-    setTimeoutId(newTimeoutId);
-
-    // Cleanup the timeout on unmount to avoid memory leaks
-    return () => {
-      clearTimeout(newTimeoutId);
-    };
-  }, [locationSelectFilterValue]);
 
   return (
     <>
@@ -267,10 +154,7 @@ export default function LeagueForm(props: LeagueFormProps) {
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Location</FormLabel>
-          <Select isMulti={false} onChange={onLocationChange} isLoading={locationSelectIsLoading}
-                  onInputChange={(newValue) => {
-                    setLocationSelectFilterValue(newValue)
-                  }} options={locationOptions}/>
+          <LocationSelect onChange={onLocationChange} onError={onSelectError}/>
           <FormHelperText>
             The location where the league takes place
           </FormHelperText>
