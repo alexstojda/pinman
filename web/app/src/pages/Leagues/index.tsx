@@ -67,7 +67,7 @@ export default function LeaguesPage(props: LeagueListPageProps) {
       )
     }
 
-    if (leagues.length === 0) {
+    if (!leagues || leagues.length === 0) {
       return (
         <p>No leagues found, try creating one!</p>
       )
@@ -81,7 +81,7 @@ export default function LeaguesPage(props: LeagueListPageProps) {
                 <Heading size={'md'}>{league.name}</Heading>
               </CardHeader>
               <CardBody>
-                <p style={{textAlign: 'right'}}>{league.location}</p>
+                <p style={{textAlign: 'right'}}>{league.locationId}</p>
               </CardBody>
             </Card>
           </GridItem>
