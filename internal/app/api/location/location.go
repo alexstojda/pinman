@@ -1,12 +1,13 @@
 package location
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"net/http"
-	"pinman/internal/app/api/errors"
+	apierrors "pinman/internal/app/api/errors"
 	"pinman/internal/app/generated"
 	"pinman/internal/clients/pinballmap"
 	"pinman/internal/models"
@@ -37,14 +38,14 @@ func (c *Controller) CreateLocation(ctx *gin.Context) {
 	payload := &generated.LocationCreate{}
 
 	if err := ctx.ShouldBindJSON(payload); err != nil {
-		errors.AbortWithError(http.StatusBadRequest, err.Error(), ctx)
+		apierrors.AbortWithError(http.StatusBadRequest, err.Error(), ctx)
 		return
 	}
 
 	pinballMapLocation, err := c.pmClient.GetLocation(payload.PinballMapId)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to get location with id '%d' from pinball map API", payload.PinballMapId)
-		errors.AbortWithError(http.StatusInternalServerError, err.Error(), ctx)
+		apierrors.AbortWithError(http.StatusInternalServerError, err.Error(), ctx)
 		return
 	}
 
@@ -62,11 +63,11 @@ func (c *Controller) CreateLocation(ctx *gin.Context) {
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
 			//TODO: Add some retry logic to generate a different slug if this happens
-			errors.AbortWithError(http.StatusConflict, "location with slug already exists", ctx)
+			apierrors.AbortWithError(http.StatusConflict, "location with slug already exists", ctx)
 			return
 		} else {
 			log.Err(result.Error).Msg("failed to create location")
-			errors.AbortWithError(http.StatusInternalServerError, "failed to create location", ctx)
+			apierrors.AbortWithError(http.StatusInternalServerError, "failed to create location", ctx)
 			return
 		}
 	}
@@ -89,7 +90,7 @@ func (c *Controller) ListLocations(ctx *gin.Context) {
 	result := c.DB.Find(&dbLocations)
 	if result.Error != nil {
 		log.Err(result.Error).Msg("failed to list locations")
-		errors.AbortWithError(http.StatusInternalServerError, "failed to list locations", ctx)
+		apierrors.AbortWithError(http.StatusInternalServerError, "failed to list locations", ctx)
 		return
 	}
 
@@ -115,12 +116,12 @@ func (c *Controller) GetLocationWithSlug(ctx *gin.Context, slug string) {
 	var location models.Location
 	result := c.DB.Where("slug = ?", slug).First(&location)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			errors.AbortWithError(http.StatusNotFound, "location not found", ctx)
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			apierrors.AbortWithError(http.StatusNotFound, "location not found", ctx)
 			return
 		} else {
 			log.Err(result.Error).Msg("failed to get location")
-			errors.AbortWithError(http.StatusInternalServerError, "failed to get location", ctx)
+			apierrors.AbortWithError(http.StatusInternalServerError, "failed to get location", ctx)
 			return
 		}
 	}
