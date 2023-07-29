@@ -1,11 +1,11 @@
 import {Api, League, useAuth} from "../../api";
 import {useEffect, useState} from "react";
 import {
+  Box,
   Button,
   Card,
   CardBody,
   CardHeader,
-  Container,
   Grid,
   GridItem,
   Heading,
@@ -16,7 +16,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Spacer,
+  Spacer, Text,
 } from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
@@ -78,10 +78,11 @@ export default function LeaguesPage(props: LeagueListPageProps) {
           <GridItem key={league.id}>
             <Card data-testid="league-card" direction={'row'}>
               <CardHeader>
-                <Heading size={'md'}>{league.name}</Heading>
+                <Heading lineHeight={'2em'} mt={'0'} mb={'0'} verticalAlign={'middle'} size={'md'}>{league.name}</Heading>
               </CardHeader>
-              <CardBody>
-                <p style={{textAlign: 'right'}}>{league.locationId}</p>
+              <CardBody textAlign={'right'}>
+                <Text fontSize={'0.8em'}>{league.location.name}</Text>
+                <Text fontSize={'0.65em'}>{league.location.address}</Text>
               </CardBody>
             </Card>
           </GridItem>
@@ -103,26 +104,28 @@ export default function LeaguesPage(props: LeagueListPageProps) {
         </ModalContent>
       </Modal>
 
-      <Container>
-        <HStack py={5}>
-          <Heading
-            textAlign={'center'}
-            fontSize={'4xl'}
-            fontWeight={'bold'}>
-            Leagues
-          </Heading>
-          <Spacer/>
-          {auth?.user &&
-            <Button data-testid={'create-league'} size={'sm'} onClick={() => {
-              navigate('/leagues/create')
-            }}>
-              Create League
-            </Button>
-          }
-        </HStack>
-        {renderList()}
-        <Footer/>
-      </Container>
+      <Box fontSize="xl" w={['90%', '85%', '80%']} maxW={800} mx="auto">
+        <Box pb={10}>
+          <HStack py={5}>
+            <Heading
+              textAlign={'center'}
+              fontSize={'4xl'}
+              fontWeight={'bold'}>
+              Leagues
+            </Heading>
+            <Spacer/>
+            {auth?.user &&
+              <Button data-testid={'create-league'} size={'sm'} onClick={() => {
+                navigate('/leagues/create')
+              }}>
+                Create League
+              </Button>
+            }
+          </HStack>
+          {renderList()}
+          <Footer/>
+        </Box>
+      </Box>
     </>
   )
 }
