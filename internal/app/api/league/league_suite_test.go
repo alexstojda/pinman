@@ -314,7 +314,7 @@ var _ = ginkgo.Describe("Controller", func() {
 				gomega.Expect(response.Leagues).To(gomega.HaveLen(1))
 				gomega.Expect(response.Leagues[0].Name).To(gomega.Equal(leagueObj.Name))
 				gomega.Expect(response.Leagues[0].Slug).To(gomega.Equal(leagueObj.Slug))
-				gomega.Expect(response.Leagues[0].LocationId).To(gomega.Equal(leagueObj.Location.ID.String()))
+				gomega.Expect(response.Leagues[0].LocationId).To(gomega.Equal(leagueObj.LocationID.String()))
 			})
 		})
 		ginkgo.Context("with unknown sql error", func() {

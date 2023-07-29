@@ -103,8 +103,8 @@ func (c *Controller) ListLeagues(ctx *gin.Context) {
 			Id:         league.ID.String(),
 			Name:       league.Name,
 			Slug:       league.Slug,
-			LocationId: league.Location.ID.String(),
-			OwnerId:    league.Owner.ID.String(),
+			LocationId: league.LocationID.String(),
+			OwnerId:    league.OwnerID.String(),
 			CreatedAt:  utils.FormatTime(league.CreatedAt),
 			UpdatedAt:  utils.FormatTime(league.UpdatedAt),
 		})
