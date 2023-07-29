@@ -1,17 +1,16 @@
-import {League} from "../../api";
+import {Location} from "../../api";
 import {faker} from "@faker-js/faker";
 import * as helpers from "../../helpers";
-import {location} from "./location";
 
-export function league(): League {
+export function location(): Location {
   const name = faker.hacker.phrase();
 
   return {
     id: faker.datatype.uuid(),
     name: name,
     slug: helpers.slugify(name),
-    location: location(),
-    ownerId: faker.datatype.uuid(),
+    address: faker.address.streetAddress(),
+    pinball_map_id: faker.datatype.number(),
     created_at: faker.date.recent(5).toISOString(),
     updated_at: faker.date.recent(1).toISOString()
   }
