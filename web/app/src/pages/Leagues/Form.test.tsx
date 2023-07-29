@@ -47,7 +47,7 @@ describe('LeagueForm', function () {
     await typeLeagueInfo(result)
 
     const submitButton = await result.findByText("Create")
-    await act(() => {
+    act(() => {
       Simulate.click(submitButton)
     })
 
@@ -67,7 +67,7 @@ describe('LeagueForm', function () {
     await typeLeagueInfo(result)
 
     const submitButton = await result.findByText("Create")
-    await act(() => {
+    act(() => {
       Simulate.click(submitButton)
     })
 
@@ -82,19 +82,19 @@ async function typeLeagueInfo(result: RenderResult) {
 
   const nameField = await result.findByPlaceholderText("name")
   nameField.setAttribute("value", faker.name.fullName())
-  await act(() => {
+  act(() => {
     Simulate.change(nameField)
   })
 
   const slugField = await result.findByPlaceholderText("slug")
   slugField.setAttribute("value", helpers.slugify(name))
-  await act(() => {
+  act(() => {
     Simulate.change(slugField)
   })
 
   const locationField = await result.findByPlaceholderText("location")
   locationField.setAttribute("value", faker.random.words(4))
-  await act(() => {
+  act(() => {
     Simulate.change(locationField)
   })
 }
