@@ -114,8 +114,8 @@ var _ = ginkgo.Describe("Controller", func() {
 
 				gomega.Expect(response.League.Name).To(gomega.Equal(payload.Name))
 				gomega.Expect(response.League.Slug).To(gomega.Equal(payload.Slug))
-				gomega.Expect(response.League.LocationId).To(gomega.Equal(payload.LocationId))
-
+				gomega.Expect(response.League.Location.Id).To(gomega.Equal(payload.LocationId))
+				gomega.Expect(response.League.Location.Name).To(gomega.Equal(locationObj.Name))
 			})
 		})
 
@@ -277,26 +277,34 @@ var _ = ginkgo.Describe("Controller", func() {
 	})
 
 	ginkgo.When("ListLeagues receives a request", func() {
-		ginkgo.Context("with valid request", func() {
+		ginkgo.Context("with valid payload", func() {
 			ginkgo.It("succeeds", func() {
 				router.Use(func(ctx *gin.Context) {
 					ctx.Set(auth.IdentityKey, userObj)
 				})
 
 				leagueObj := &models.League{
-					ID:         uuid.New(),
-					Name:       "Test League",
-					Slug:       "test-league",
-					Owner:      *userObj,
-					LocationID: uuid.New(),
-					CreatedAt:  time.Now().Add(-1 * time.Hour),
-					UpdatedAt:  time.Now(),
+					ID:        uuid.New(),
+					Name:      "Test League",
+					Slug:      "test-league",
+					Owner:     *userObj,
+					Location:  *locationObj,
+					CreatedAt: time.Now().Add(-1 * time.Hour),
+					UpdatedAt: time.Now(),
 				}
 
 				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "leagues"`)).
 					WillReturnRows(
 						sqlmock.NewRows([]string{"id", "name", "slug", "owner_id", "location_id", "created_at", "updated_at"}).
-							AddRow(leagueObj.ID.String(), leagueObj.Name, leagueObj.Slug, leagueObj.Owner.ID, leagueObj.LocationID, leagueObj.CreatedAt, leagueObj.UpdatedAt),
+							AddRow(leagueObj.ID.String(), leagueObj.Name, leagueObj.Slug, leagueObj.Owner.ID.String(), leagueObj.Location.ID.String(), leagueObj.CreatedAt, leagueObj.UpdatedAt),
+					)
+
+				const sqlQuery = `SELECT * FROM "locations" WHERE "locations"."id" = $1`
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(locationObj.ID).
+					WillReturnRows(
+						sqlmock.NewRows([]string{"id", "name", "slug", "address", "pinball_map_id", "created_at", "updated_at"}).
+							AddRow(locationObj.ID.String(), locationObj.Name, locationObj.Slug, locationObj.Address, locationObj.PinballMapID, locationObj.CreatedAt, locationObj.UpdatedAt),
 					)
 
 				req, err := http.NewRequest("GET", "/", nil)
@@ -314,7 +322,8 @@ var _ = ginkgo.Describe("Controller", func() {
 				gomega.Expect(response.Leagues).To(gomega.HaveLen(1))
 				gomega.Expect(response.Leagues[0].Name).To(gomega.Equal(leagueObj.Name))
 				gomega.Expect(response.Leagues[0].Slug).To(gomega.Equal(leagueObj.Slug))
-				gomega.Expect(response.Leagues[0].LocationId).To(gomega.Equal(leagueObj.LocationID.String()))
+				gomega.Expect(response.Leagues[0].Location.Id).To(gomega.Equal(leagueObj.Location.ID.String()))
+				gomega.Expect(response.Leagues[0].Location.Name).To(gomega.Equal(leagueObj.Location.Name))
 			})
 		})
 		ginkgo.Context("with unknown sql error", func() {
@@ -347,20 +356,28 @@ var _ = ginkgo.Describe("Controller", func() {
 		ginkgo.Context("with valid payload", func() {
 			ginkgo.It("succeeds", func() {
 				leagueObj := &models.League{
-					ID:         uuid.New(),
-					Name:       "Test League",
-					Slug:       "test-league",
-					Owner:      *userObj,
-					LocationID: locationObj.ID,
-					CreatedAt:  time.Now().Add(-1 * time.Hour),
-					UpdatedAt:  time.Now(),
+					ID:        uuid.New(),
+					Name:      "Test League",
+					Slug:      "test-league",
+					Owner:     *userObj,
+					Location:  *locationObj,
+					CreatedAt: time.Now().Add(-1 * time.Hour),
+					UpdatedAt: time.Now(),
 				}
 
 				mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "leagues" WHERE slug = $1`)).
 					WithArgs(leagueObj.Slug).
 					WillReturnRows(
 						sqlmock.NewRows([]string{"id", "name", "slug", "owner_id", "location_id", "created_at", "updated_at"}).
-							AddRow(leagueObj.ID.String(), leagueObj.Name, leagueObj.Slug, leagueObj.Owner.ID.String(), leagueObj.LocationID.String(), leagueObj.CreatedAt, leagueObj.UpdatedAt),
+							AddRow(leagueObj.ID.String(), leagueObj.Name, leagueObj.Slug, leagueObj.Owner.ID.String(), leagueObj.Location.ID.String(), leagueObj.CreatedAt, leagueObj.UpdatedAt),
+					)
+
+				const sqlQuery = `SELECT * FROM "locations" WHERE "locations"."id" = $1`
+				mock.ExpectQuery(regexp.QuoteMeta(sqlQuery)).
+					WithArgs(locationObj.ID).
+					WillReturnRows(
+						sqlmock.NewRows([]string{"id", "name", "slug", "address", "pinball_map_id", "created_at", "updated_at"}).
+							AddRow(locationObj.ID.String(), locationObj.Name, locationObj.Slug, locationObj.Address, locationObj.PinballMapID, locationObj.CreatedAt, locationObj.UpdatedAt),
 					)
 
 				req, err := http.NewRequest("GET", "/", nil)
@@ -379,7 +396,8 @@ var _ = ginkgo.Describe("Controller", func() {
 
 				gomega.Expect(response.League.Name).To(gomega.Equal(leagueObj.Name))
 				gomega.Expect(response.League.Slug).To(gomega.Equal(leagueObj.Slug))
-				gomega.Expect(response.League.LocationId).To(gomega.Equal(leagueObj.LocationID.String()))
+				gomega.Expect(response.League.Location.Id).To(gomega.Equal(leagueObj.Location.ID.String()))
+				gomega.Expect(response.League.Location.Name).To(gomega.Equal(leagueObj.Location.Name))
 			})
 		})
 		ginkgo.Context("when location is not found", func() {
