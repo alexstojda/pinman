@@ -14,8 +14,6 @@ import (
 	"pinman/internal/app/api/errors"
 	"pinman/internal/app/api/health"
 	"pinman/internal/app/api/hello"
-	"pinman/internal/app/api/league"
-	"pinman/internal/app/api/user"
 	"pinman/internal/app/generated"
 	"pinman/internal/utils"
 	"strings"
@@ -81,14 +79,7 @@ func (s *Server) StartServer() error {
 
 	generated.RegisterHandlersWithOptions(
 		router,
-		&api.Server{
-			User:   user.NewController(s.Db),
-			League: league.NewController(s.Db),
-			AuthHandlers: api.AuthHandlers{
-				Login:   authMiddleware.LoginHandler,
-				Refresh: authMiddleware.RefreshHandler,
-			},
-		},
+		api.NewServer(s.Db, authMiddleware),
 		generated.GinServerOptions{
 			BaseURL: "/api",
 			Middlewares: []generated.MiddlewareFunc{
