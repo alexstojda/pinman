@@ -284,7 +284,14 @@ components:
         id: id
         slug: slug
         ownerId: ownerId
-        locationId: locationId
+        location:
+          id: id
+          name: name
+          address: address
+          slug: slug
+          pinball_map_id: pinball_map_id
+          created_at: created_at
+          updated_at: updated_at
       properties:
         id:
           type: string
@@ -302,10 +309,12 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             binding: requred
-        locationId:
-          type: string
-          x-oapi-codegen-extra-tags:
-            binding: requred
+        location:
+          allOf:
+            - $ref: '#/components/schemas/location'
+            - x-oapi-codegen-extra-tags:
+                binding: requred
+              x-go-type: Location
         created_at:
           type: string
           x-oapi-codegen-extra-tags:
@@ -319,7 +328,7 @@ components:
         - name
         - slug
         - ownerId
-        - locationId
+        - location
         - created_at
         - updated_at
     user:
@@ -507,7 +516,14 @@ components:
           id: id
           slug: slug
           ownerId: ownerId
-          locationId: locationId
+          location:
+            id: id
+            name: name
+            address: address
+            slug: slug
+            pinball_map_id: pinball_map_id
+            created_at: created_at
+            updated_at: updated_at
       properties:
         league:
           $ref: '#/components/schemas/league'
@@ -521,7 +537,14 @@ components:
             id: id
             slug: slug
             ownerId: ownerId
-            locationId: locationId
+            location:
+              id: id
+              name: name
+              address: address
+              slug: slug
+              pinball_map_id: pinball_map_id
+              created_at: created_at
+              updated_at: updated_at
       properties:
         leagues:
           type: array

@@ -77,20 +77,28 @@ func (c *Controller) CreateLeague(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, generated.LeagueResponse{
 		League: &generated.League{
-			Id:         league.ID.String(),
-			Name:       league.Name,
-			Slug:       league.Slug,
-			LocationId: location.ID.String(),
-			OwnerId:    league.OwnerID.String(),
-			CreatedAt:  utils.FormatTime(league.CreatedAt),
-			UpdatedAt:  utils.FormatTime(league.UpdatedAt),
+			Id:      league.ID.String(),
+			Name:    league.Name,
+			Slug:    league.Slug,
+			OwnerId: league.OwnerID.String(),
+			Location: generated.Location{
+				Address:      location.Address,
+				Id:           location.ID.String(),
+				Name:         location.Name,
+				PinballMapId: location.PinballMapID,
+				Slug:         location.Slug,
+				CreatedAt:    utils.FormatTime(league.CreatedAt),
+				UpdatedAt:    utils.FormatTime(league.UpdatedAt),
+			},
+			CreatedAt: utils.FormatTime(league.CreatedAt),
+			UpdatedAt: utils.FormatTime(league.UpdatedAt),
 		},
 	})
 }
 
 func (c *Controller) ListLeagues(ctx *gin.Context) {
 	var dbResults []models.League
-	result := c.DB.Find(&dbResults)
+	result := c.DB.Preload("Location").Find(&dbResults)
 	if result.Error != nil {
 		log.Err(result.Error).Msg("failed to list leagues")
 		apierrors.AbortWithError(http.StatusInternalServerError, "failed to list leagues", ctx)
@@ -100,13 +108,21 @@ func (c *Controller) ListLeagues(ctx *gin.Context) {
 	var leagues []generated.League
 	for _, league := range dbResults {
 		leagues = append(leagues, generated.League{
-			Id:         league.ID.String(),
-			Name:       league.Name,
-			Slug:       league.Slug,
-			LocationId: league.LocationID.String(),
-			OwnerId:    league.OwnerID.String(),
-			CreatedAt:  utils.FormatTime(league.CreatedAt),
-			UpdatedAt:  utils.FormatTime(league.UpdatedAt),
+			Id:   league.ID.String(),
+			Name: league.Name,
+			Slug: league.Slug,
+			Location: generated.Location{
+				Address:      league.Location.Address,
+				Id:           league.Location.ID.String(),
+				Name:         league.Location.Name,
+				PinballMapId: league.Location.PinballMapID,
+				Slug:         league.Location.Slug,
+				CreatedAt:    utils.FormatTime(league.CreatedAt),
+				UpdatedAt:    utils.FormatTime(league.UpdatedAt),
+			},
+			OwnerId:   league.OwnerID.String(),
+			CreatedAt: utils.FormatTime(league.CreatedAt),
+			UpdatedAt: utils.FormatTime(league.UpdatedAt),
 		})
 	}
 
@@ -117,7 +133,7 @@ func (c *Controller) ListLeagues(ctx *gin.Context) {
 
 func (c *Controller) GetLeagueWithSlug(ctx *gin.Context, slug string) {
 	var dbResult models.League
-	result := c.DB.Where("slug = ?", slug).First(&dbResult)
+	result := c.DB.Preload("Location").Where("slug = ?", slug).First(&dbResult)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			apierrors.AbortWithError(http.StatusNotFound, "league not found", ctx)
@@ -131,13 +147,21 @@ func (c *Controller) GetLeagueWithSlug(ctx *gin.Context, slug string) {
 
 	ctx.JSON(http.StatusOK, generated.LeagueResponse{
 		League: &generated.League{
-			Id:         dbResult.ID.String(),
-			Name:       dbResult.Name,
-			Slug:       dbResult.Slug,
-			LocationId: dbResult.LocationID.String(),
-			OwnerId:    dbResult.OwnerID.String(),
-			CreatedAt:  utils.FormatTime(dbResult.CreatedAt),
-			UpdatedAt:  utils.FormatTime(dbResult.UpdatedAt),
+			Id:   dbResult.ID.String(),
+			Name: dbResult.Name,
+			Slug: dbResult.Slug,
+			Location: generated.Location{
+				Address:      dbResult.Location.Address,
+				Id:           dbResult.Location.ID.String(),
+				Name:         dbResult.Location.Name,
+				PinballMapId: dbResult.Location.PinballMapID,
+				Slug:         dbResult.Location.Slug,
+				CreatedAt:    utils.FormatTime(dbResult.CreatedAt),
+				UpdatedAt:    utils.FormatTime(dbResult.UpdatedAt),
+			},
+			OwnerId:   dbResult.OwnerID.String(),
+			CreatedAt: utils.FormatTime(dbResult.CreatedAt),
+			UpdatedAt: utils.FormatTime(dbResult.UpdatedAt),
 		},
 	})
 }
