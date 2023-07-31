@@ -11,7 +11,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import React, {ReactNode, useState} from "react";
-import {Api, ErrorResponse, LeagueCreate, pinballMap, useAuth} from "../../api";
+import {Api, ErrorResponse, LeagueCreate, useAuth} from "../../api";
 import {slugify} from "../../helpers";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
@@ -31,7 +31,7 @@ export default function LeagueForm(props: LeagueFormProps) {
   useAuth({requireAuth: true})
 
   const [alert, setAlert] = useState<AlertData>()
-  const [locationValue, setLocationValue] = useState<LocationOption>()
+  const [locationValue, setLocationValue] = useState<LocationOption | undefined>()
   const [slugModified, setSlugModified] = useState<boolean>(false)
   const [slugError, setSlugError] = useState<ReactNode | undefined>(undefined)
   const [leagueData, setLeagueData] = useState<LeagueCreate>({
@@ -41,11 +41,19 @@ export default function LeagueForm(props: LeagueFormProps) {
   });
 
   async function submitForm() {
-    let locationId = ""
-    if (locationValue!.type === "pinmap") {
+    let locationId: string
+    if (locationValue === undefined) {
+      setAlert({
+        status: "error",
+        title: "No location selected",
+        detail: "Please select a location for your league"
+      })
+      return
+    }
+    if (locationValue.type === "pinmap") {
       locationId = await pinmanApi.locationsApi().locationsPost({
-        pinball_map_id: parseInt(locationValue!.pinballMapId),
-      }).then((response) => response.data.location!.id).catch((e: AxiosError) => {
+        pinball_map_id: parseInt(locationValue.pinballMapId),
+      }).then((response) => response.data.location.id).catch((e: AxiosError) => {
         const err = pinmanApi.parseError(e)
         setAlert({
           status: "error",
@@ -55,7 +63,7 @@ export default function LeagueForm(props: LeagueFormProps) {
         throw new Error(err.detail)
       })
     } else {
-      locationId = locationValue!.value
+      locationId = locationValue.value
     }
 
     pinmanApi.leaguesApi().leaguesPost({

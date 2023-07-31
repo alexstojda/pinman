@@ -589,6 +589,8 @@ components:
         location:
           $ref: '#/components/schemas/location'
       type: object
+      required:
+        - location
     locationListResponse:
       example:
         locations:
