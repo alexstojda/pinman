@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {AxiosError} from "axios";
-import {Api, ErrorResponse, pinballMap} from "../../api";
+import {Api, pinballMap} from "../../api";
 import {ActionMeta, Select, SingleValue} from "chakra-react-select";
 
 export type LocationOption = {
@@ -19,8 +19,8 @@ const pinmanApi = new Api()
 const pinballMapApi = new pinballMap.Api()
 
 type LocationSelectProps = {
-  onChange: (value: LocationOption) => void
-  onError: (error: any) => void
+  onChange?: (value: LocationOption) => void
+  onError?: (error: any) => void
   value?: LocationOption
 }
 
@@ -78,10 +78,6 @@ export function LocationSelect(props: LocationSelectProps) {
   }
 
   function updatePinballMapLocations(nameFilter: string) {
-    if (nameFilter.length < 4) {
-      return
-    }
-
     pinballMapApi.locationsGet(nameFilter).then((locations) => {
       setPinmapLocations(
         locations.map((location): LocationOption => ({
@@ -108,6 +104,7 @@ export function LocationSelect(props: LocationSelectProps) {
   useEffect(() => {
     if (locationSelectFilterValue.length < 4) {
       setLocationSelectIsLoading(false)
+      return
     } else {
       setLocationSelectIsLoading(true)
     }
@@ -126,21 +123,22 @@ export function LocationSelect(props: LocationSelectProps) {
     };
   }, [locationSelectFilterValue]);
 
-  function onChange(newValue: SingleValue<LocationOption>, _ : ActionMeta<LocationOption>) {
+  function onChange(newValue: SingleValue<LocationOption>, _: ActionMeta<LocationOption>) {
     if (props.onChange) {
       props.onChange(newValue as LocationOption)
     }
   }
 
   return (
-    <Select isMulti={false}
-            onChange={onChange}
-            isLoading={locationSelectIsLoading}
-            onInputChange={(newValue) => {
-              setLocationSelectFilterValue(newValue)
-            }}
-            options={locationOptions}
-            value={props.value}
+    <Select
+      isMulti={false}
+      onChange={onChange}
+      isLoading={locationSelectIsLoading}
+      onInputChange={(newValue) => {
+        setLocationSelectFilterValue(newValue)
+      }}
+      options={locationOptions}
+      value={props.value}
     />
   )
 }

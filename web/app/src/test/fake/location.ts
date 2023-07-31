@@ -1,4 +1,4 @@
-import {Location} from "../../api";
+import {Location, pinballMap} from "../../api";
 import {faker} from "@faker-js/faker";
 import * as helpers from "../../helpers";
 
@@ -13,5 +13,18 @@ export function location(): Location {
     pinball_map_id: faker.datatype.number(),
     created_at: faker.date.recent(5).toISOString(),
     updated_at: faker.date.recent(1).toISOString()
+  }
+}
+
+export function pinballMapLocation(): pinballMap.Location {
+  return {
+    id: faker.datatype.number(),
+    name: faker.hacker.phrase(),
+    street: faker.address.streetAddress(),
+    city: faker.address.city(),
+    state: faker.address.stateAbbr(),
+    zip: faker.address.zipCode(),
+    country: faker.address.countryCode(),
+    num_machines: faker.datatype.number(),
   }
 }
