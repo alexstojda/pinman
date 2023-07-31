@@ -73,7 +73,7 @@ func (c *Controller) CreateLocation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, generated.LocationResponse{
-		Location: &generated.Location{
+		Location: generated.Location{
 			Id:           location.ID.String(),
 			Name:         location.Name,
 			Slug:         location.Slug,
@@ -127,7 +127,7 @@ func (c *Controller) GetLocationWithSlug(ctx *gin.Context, slug string) {
 	}
 
 	ctx.JSON(http.StatusOK, generated.LocationResponse{
-		Location: &generated.Location{
+		Location: generated.Location{
 			Id:           location.ID.String(),
 			Name:         location.Name,
 			Slug:         location.Slug,
