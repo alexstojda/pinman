@@ -1,11 +1,12 @@
-import {act, render, RenderResult} from "@testing-library/react";
+import {act, render, RenderResult, waitFor} from "@testing-library/react";
 import LeagueForm from "./Form";
 import {faker} from "@faker-js/faker";
 import {Simulate} from "react-dom/test-utils";
 import {randomInt} from "crypto";
 import * as helpers from '../../helpers'
-import {Api, LeaguesApi} from "../../api";
+import {Api, LeaguesApi, LocationsApi} from "../../api";
 import {fake} from "../../test";
+import {LocationOption} from "../../components/LocationSelect";
 
 jest.mock('../../api')
 const mockApi = jest.mocked(Api)
@@ -14,6 +15,22 @@ const mockedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom') as any,
   useNavigate: () => mockedNavigate,
+}));
+
+jest.mock('../../components/LocationSelect', () => ({
+  __esModule: true,
+  LocationSelect: (props: { onChange: (o: LocationOption) => void }) => <input
+    type='text'
+    onChange={(e) => {
+      props.onChange({
+        label: 'test-location',
+        type: 'pinman',
+        value: e.target.value,
+        pinballMapId: '1',
+      })
+    }}
+    placeholder={'test-location'}
+  />,
 }));
 
 beforeEach(() => {
@@ -51,9 +68,8 @@ describe('LeagueForm', function () {
       Simulate.click(submitButton)
     })
 
-    expect(mockedNavigate).toHaveBeenCalledWith('/leagues')
+    await waitFor(() => expect(mockedNavigate).toBeCalledWith('/leagues'))
   })
-
   it('renders error from API', async () => {
     const mockError = fake.errorResponse()
     mockApi.prototype.parseError.mockReturnValue(mockError)
@@ -71,9 +87,50 @@ describe('LeagueForm', function () {
       Simulate.click(submitButton)
     })
 
-    expect(mockApi.prototype.parseError).toBeCalled()
-    expect(result.getByText(mockError.title)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(mockApi.prototype.parseError).toBeCalled()
+      expect(result.getByText(mockError.title)).toBeInTheDocument()
+    })
   })
+  it(
+    'creates new location with pinball map location and redirects to /leagues if successful',
+    async function () {
+      jest.mocked(LeaguesApi).prototype.leaguesPost.mockResolvedValue({
+        config: {},
+        data: {
+          league: fake.league()
+        },
+        headers: {},
+        request: {},
+        status: 201,
+        statusText: "",
+      })
+      mockApi.prototype.leaguesApi.mockReturnValue(new LeaguesApi())
+
+      jest.mocked(LocationsApi).prototype.locationsPost.mockResolvedValue({
+        config: {},
+        data: {
+          location: fake.location()
+        },
+        headers: {},
+        request: {},
+        status: 201,
+        statusText: "",
+      })
+      mockApi.prototype.locationsApi.mockReturnValue(new LocationsApi())
+
+      const result = render(
+        <LeagueForm mode={'create'}/>
+      )
+      await typeLeagueInfo(result)
+
+      const submitButton = await result.findByText("Create")
+      act(() => {
+        Simulate.click(submitButton)
+      })
+
+      await waitFor(() => expect(mockedNavigate).toBeCalledWith('/leagues'))
+    })
 });
 
 
@@ -92,9 +149,9 @@ async function typeLeagueInfo(result: RenderResult) {
     Simulate.change(slugField)
   })
 
-  const locationField = await result.findByPlaceholderText("location")
-  locationField.setAttribute("value", faker.random.words(4))
+  const locationSelectValue = await result.findByPlaceholderText('test-location')
+  slugField.setAttribute("value", faker.datatype.uuid())
   act(() => {
-    Simulate.change(locationField)
+    Simulate.change(locationSelectValue)
   })
 }
