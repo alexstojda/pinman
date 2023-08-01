@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -9,7 +8,7 @@ import (
 	"pinman/internal/app/api/league"
 	"pinman/internal/app/api/location"
 	"pinman/internal/app/api/user"
-	"reflect"
+	"pinman/internal/utils"
 )
 
 type AuthHandlers struct {
@@ -36,22 +35,11 @@ func NewServer(db *gorm.DB, authMiddleware *jwt.GinJWTMiddleware) *Server {
 			Refresh: authMiddleware.RefreshHandler,
 		},
 	}
-	if err := checkFieldsForNil(server); err != nil {
+	if err := utils.CheckFieldsForNil(server); err != nil {
 		panic(fmt.Errorf("failed to create server: %w", err))
 	}
 
 	return server
-}
-
-func checkFieldsForNil(s *Server) error {
-	serverValue := reflect.ValueOf(*s)
-	for i := 0; i < serverValue.NumField(); i++ {
-		fieldValue := serverValue.Field(i)
-		if fieldValue.Kind() == reflect.Ptr && fieldValue.IsNil() {
-			return errors.New(fmt.Sprint("field ", serverValue.Type().Field(i).Name, " is nil"))
-		}
-	}
-	return nil
 }
 
 func (s *Server) PostAuthLogin(c *gin.Context) {
