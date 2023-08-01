@@ -41,7 +41,7 @@ export default function LeagueForm(props: LeagueFormProps) {
   });
 
   async function submitForm() {
-    let locationId: string
+    let locationId: string | undefined
     if (locationValue === undefined) {
       setAlert({
         status: "error",
@@ -60,8 +60,11 @@ export default function LeagueForm(props: LeagueFormProps) {
           title: err.title,
           detail: err.detail
         })
-        throw new Error(err.detail)
+        return undefined
       })
+      if (locationId === undefined) {
+        return
+      }
     } else {
       locationId = locationValue.value
     }
@@ -109,7 +112,8 @@ export default function LeagueForm(props: LeagueFormProps) {
       if (validSlug !== e.target.value) {
         setSlugError(
           <p>
-            Slug must be url-friendly. Try <code>{validSlug}</code> instead, or clear the field to use the generated
+            Slug must be url-friendly. Try <code>{validSlug}</code> instead, or clear the field to use the
+            generated
             slug.
           </p>
         )
