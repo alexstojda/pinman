@@ -1,7 +1,6 @@
 package league
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -43,7 +42,7 @@ func (c *Controller) CreateLeague(ctx *gin.Context) {
 	location := models.Location{}
 	locationQueryResult := c.DB.Where("id = ?", payload.LocationId).First(&location)
 	if locationQueryResult.Error != nil {
-		if errors.Is(locationQueryResult.Error, gorm.ErrRecordNotFound) {
+		if strings.Contains(locationQueryResult.Error.Error(), "not found") {
 			apierrors.AbortWithError(http.StatusBadRequest, fmt.Sprintf("location with id %s does not exist", payload.LocationId), ctx)
 			return
 		} else {
@@ -65,7 +64,7 @@ func (c *Controller) CreateLeague(ctx *gin.Context) {
 
 	createResult := c.DB.Create(&league)
 	if createResult.Error != nil {
-		if strings.Contains(createResult.Error.Error(), "duplicate key value violates unique") {
+		if strings.Contains(createResult.Error.Error(), "duplicate key") {
 			apierrors.AbortWithError(http.StatusConflict, "league with slug already exists", ctx)
 			return
 		} else {
@@ -135,7 +134,7 @@ func (c *Controller) GetLeagueWithSlug(ctx *gin.Context, slug string) {
 	var dbResult models.League
 	result := c.DB.Preload("Location").Where("slug = ?", slug).First(&dbResult)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		if strings.Contains(result.Error.Error(), "not found") {
 			apierrors.AbortWithError(http.StatusNotFound, "league not found", ctx)
 			return
 		} else {

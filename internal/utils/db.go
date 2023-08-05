@@ -32,6 +32,7 @@ func ConnectDB(config *Config, dialector ...gorm.Dialector) (*gorm.DB, error) {
 
 	db, err := gorm.Open(dialectorVar, &gorm.Config{
 		Logger: GormLogger{},
+		//TranslateError: false,
 	})
 	if err != nil {
 		return nil, err

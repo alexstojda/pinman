@@ -1,7 +1,6 @@
 package location
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -61,8 +60,8 @@ func (c *Controller) CreateLocation(ctx *gin.Context) {
 
 	result := c.DB.Create(&location)
 	if result.Error != nil {
-		if strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
-			//TODO: Add some retry logic to generate a different slug if this happens
+		if strings.Contains(result.Error.Error(), "duplicate key") {
+			// TODO: Add some retry logic to generate a different slug if this happens
 			apierrors.AbortWithError(http.StatusConflict, "location with slug already exists", ctx)
 			return
 		} else {
@@ -116,7 +115,7 @@ func (c *Controller) GetLocationWithSlug(ctx *gin.Context, slug string) {
 	var location models.Location
 	result := c.DB.Where("slug = ?", slug).First(&location)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		if strings.Contains(result.Error.Error(), "not found") {
 			apierrors.AbortWithError(http.StatusNotFound, "location not found", ctx)
 			return
 		} else {

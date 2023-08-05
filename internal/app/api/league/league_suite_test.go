@@ -217,7 +217,7 @@ var _ = ginkgo.Describe("Controller", func() {
 				const sqlInsert = `INSERT INTO "leagues" ("name","slug","owner_id","location_id","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6) RETURNING "id"`
 				mock.ExpectQuery(regexp.QuoteMeta(sqlInsert)).
 					WithArgs(payload.Name, payload.Slug, userObj.ID.String(), payload.LocationId, utils.AnyTime{}, utils.AnyTime{}).
-					WillReturnError(fmt.Errorf("duplicate key value violates unique"))
+					WillReturnError(fmt.Errorf("ERROR: duplicate key value violates unique constraint \"idx_league_slug\" (SQLSTATE 23505)"))
 				mock.ExpectRollback()
 
 				body, err := json.Marshal(payload)

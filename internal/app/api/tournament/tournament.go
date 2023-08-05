@@ -66,7 +66,7 @@ func (c *Controller) CreateTournament(ctx *gin.Context) {
 
 	result := c.DB.Create(tournament)
 	if result.Error != nil {
-		if strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
+		if strings.Contains(result.Error.Error(), "duplicate key") {
 			apierrors.AbortWithError(http.StatusBadRequest, "tournament with slug already exists", ctx)
 			return
 		} else {

@@ -74,7 +74,7 @@ func (c *Controller) SignUpUser(ctx *gin.Context) {
 	result := c.DB.Create(&newUser)
 
 	if result.Error != nil {
-		if strings.Contains(result.Error.Error(), "duplicate key value violates unique") {
+		if strings.Contains(result.Error.Error(), "duplicate key") {
 			errors.AbortWithError(http.StatusConflict, "user with that email already exists", ctx)
 			return
 		} else {

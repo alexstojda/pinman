@@ -179,7 +179,7 @@ var _ = g.Describe("Controller", func() {
 				const sqlInsert = `INSERT INTO "users" ("name","email","password","role","verified","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "id"`
 				mock.ExpectQuery(regexp.QuoteMeta(sqlInsert)).
 					WithArgs(payload.Name, payload.Email, utils.AnyString{}, "user", true, utils.AnyTime{}, utils.AnyTime{}).
-					WillReturnError(fmt.Errorf("duplicate key value violates unique"))
+					WillReturnError(fmt.Errorf("ERROR: duplicate key value violates unique constraint \"idx_user_email\" (SQLSTATE 23505)"))
 
 				body, err := json.Marshal(payload)
 				m.Expect(err).To(m.BeNil())
