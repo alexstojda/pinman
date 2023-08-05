@@ -66,7 +66,7 @@ func (c *Controller) CreateLocation(ctx *gin.Context) {
 			apierrors.AbortWithError(http.StatusConflict, "location with slug already exists", ctx)
 			return
 		} else {
-			log.Err(result.Error).Msg("failed to create location")
+			log.Error().Err(result.Error).Msg("failed to create location")
 			apierrors.AbortWithError(http.StatusInternalServerError, "failed to create location", ctx)
 			return
 		}
@@ -120,7 +120,7 @@ func (c *Controller) GetLocationWithSlug(ctx *gin.Context, slug string) {
 			apierrors.AbortWithError(http.StatusNotFound, "location not found", ctx)
 			return
 		} else {
-			log.Err(result.Error).Msg("failed to get location")
+			log.Error().Err(result.Error).Msg("failed to get location")
 			apierrors.AbortWithError(http.StatusInternalServerError, "failed to get location", ctx)
 			return
 		}

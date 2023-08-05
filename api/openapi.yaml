@@ -246,6 +246,54 @@ paths:
           $ref: "#/components/responses/notFound"
       tags:
         - locations
+    ###
+    # Tournaments
+    ###
+  /tournaments:
+#    get:
+#      description: Retrieve a list of tournaments
+#      responses:
+#        "200":
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/tournamentListResponse'
+#          description: Successful response
+#        "400":
+#            $ref: "#/components/responses/badRequest"
+#        "401":
+#            $ref: "#/components/responses/unauthorized"
+#        "403":
+#            $ref: "#/components/responses/forbidden"
+#      tags:
+#        - tournaments
+    post:
+      description: Create a new tournament
+      security:
+        - pinmanAuth:
+            - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/tournamentCreate'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tournamentResponse'
+          description: Tournament was created successfully
+        "400":
+            $ref: "#/components/responses/badRequest"
+        "401":
+            $ref: "#/components/responses/unauthorized"
+        "403":
+            $ref: "#/components/responses/forbidden"
+      tags:
+        - tournaments
+
 components:
   responses:
     unauthorized:
@@ -312,9 +360,9 @@ components:
         location:
           allOf:
             - $ref: '#/components/schemas/location'
-            - x-oapi-codegen-extra-tags:
-                binding: requred
-              x-go-type: Location
+          x-oapi-codegen-extra-tags:
+            binding: requred
+          x-go-type: Location
         created_at:
           type: string
           x-oapi-codegen-extra-tags:
@@ -419,6 +467,114 @@ components:
         - pinball_map_id
         - created_at
         - updated_at
+
+    tournamentType:
+      type: string
+      enum:
+        - multi_round_tournament
+
+    tournament:
+      example:
+        name: name
+        id: id
+        slug: slug
+        leagueId: leagueId
+        address: address
+        type: multi_round_tournament
+        location:
+          id: id
+          name: name
+          address: address
+          slug: slug
+          pinball_map_id: pinball_map_id
+          created_at: created_at
+          updated_at: updated_at
+        created_at: created_at
+        updated_at: updated_at
+      properties:
+        id:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        slug:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        type:
+          allOf:
+            - $ref: '#/components/schemas/tournamentType'
+          x-oapi-codegen-extra-tags:
+            binding: required
+          x-go-type: TournamentType
+        settings:
+          allOf:
+            - $ref: '#/components/schemas/tournamentSettings'
+          x-oapi-codegen-extra-tags:
+            binding: required
+          x-go-type: TournamentSettings
+        leagueId:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        locationId:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        created_at:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+        updated_at:
+          type: string
+          x-oapi-codegen-extra-tags:
+            binding: required
+      required:
+        - id
+        - name
+        - slug
+        - leagueId
+        - locationId
+        - type
+        - settings
+        - created_at
+        - updated_at
+    tournamentSettings:
+      description: The settings for a tournament. Fields vary depending on the type of tournament.
+      oneOf:
+        - $ref: '#/components/schemas/multiRoundTournamentSettings'
+    multiRoundTournamentSettings:
+      example:
+        rounds: 8
+        games_per_round: 4
+        lowest_scores_dropped: 3
+      properties:
+        rounds:
+          type: integer
+          description: The number of rounds in the tournament
+          x-oapi-codegen-extra-tags:
+            binding: required
+        games_per_round:
+          type: integer
+          description: The number of games played by each group per round
+          x-oapi-codegen-extra-tags:
+            binding: required
+        lowest_scores_dropped:
+          type: integer
+          description: |
+            How many of a player's lowest-scored rounds are dropped when calculating the rankings of the tournament.
+            
+            Rounds a player did not participate in are counted as them having scored zero points.
+          x-oapi-codegen-extra-tags:
+            binding: required
+      required:
+        - rounds
+        - games_per_round
+        - lowest_scores_dropped
+
     ###
     # Generic Request/Response Schemas
     ###
@@ -620,6 +776,89 @@ components:
       type: object
       required:
         - pinball_map_id
+
+    ###
+    # Tournament Request/Response Schemas
+    ###
+    tournamentResponse:
+      example:
+        tournament:
+          updated_at: updated_at
+          name: name
+          created_at: created_at
+          id: id
+          slug: slug
+          leagueId: leagueId
+          settings:
+            rounds: rounds
+            games_per_round: games_per_round
+            lowest_scores_dropped: lowest_scores_dropped
+      properties:
+        tournament:
+          $ref: '#/components/schemas/tournament'
+      type: object
+      required:
+        - tournament
+    tournamentListResponse:
+      example:
+        tournaments:
+          - updated_at: updated_at
+            name: name
+            created_at: created_at
+            id: id
+            slug: slug
+            leagueId: leagueId
+            settings:
+            rounds: rounds
+            games_per_round: games_per_round
+            lowest_scores_dropped: lowest_scores_dropped
+      properties:
+        tournaments:
+          type: array
+          items:
+              $ref: '#/components/schemas/tournament'
+      type: object
+      required:
+          - tournaments
+    tournamentCreate:
+      properties:
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        leagueId:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        slug:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        locationId:
+          type: string
+          x-oapi-codegen-extra-tags:
+              binding: required
+        type:
+          allOf:
+            - $ref: '#/components/schemas/tournamentType'
+          x-oapi-codegen-extra-tags:
+            binding: required
+          x-go-type: TournamentType
+        settings:
+          allOf:
+            - $ref: '#/components/schemas/tournamentSettings'
+          x-oapi-codegen-extra-tags:
+            binding: required
+          x-go-type: TournamentSettings
+      type: object
+      required:
+        - name
+        - leagueId
+        - slug
+        - locationId
+        - type
+        - settings
+
   securitySchemes:
     pinmanAuth:
       flows:

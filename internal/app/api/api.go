@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"pinman/internal/app/api/league"
 	"pinman/internal/app/api/location"
+	"pinman/internal/app/api/tournament"
 	"pinman/internal/app/api/user"
 	"pinman/internal/utils"
 )
@@ -19,17 +20,19 @@ type AuthHandlers struct {
 // Server
 // implements generated.ServerInterface
 type Server struct {
-	User     *user.Controller
-	League   *league.Controller
-	Location *location.Controller
+	User       *user.Controller
+	League     *league.Controller
+	Location   *location.Controller
+	Tournament *tournament.Controller
 	AuthHandlers
 }
 
 func NewServer(db *gorm.DB, authMiddleware *jwt.GinJWTMiddleware) *Server {
 	server := &Server{
-		User:     user.NewController(db),
-		League:   league.NewController(db),
-		Location: location.NewController(db),
+		User:       user.NewController(db),
+		League:     league.NewController(db),
+		Location:   location.NewController(db),
+		Tournament: tournament.NewController(db),
 		AuthHandlers: AuthHandlers{
 			Login:   authMiddleware.LoginHandler,
 			Refresh: authMiddleware.RefreshHandler,
@@ -80,4 +83,8 @@ func (s *Server) PostLocations(c *gin.Context) {
 
 func (s *Server) GetLocationsSlug(c *gin.Context, slug string) {
 	s.Location.GetLocationWithSlug(c, slug)
+}
+
+func (s *Server) PostTournaments(c *gin.Context) {
+	s.Tournament.CreateTournament(c)
 }
