@@ -168,7 +168,7 @@ var _ = ginkgo.Describe("Location", func() {
 						"123 Main St, Austin, TX, USA",
 						1,
 						utils.AnyTime{}, utils.AnyTime{},
-					).WillReturnError(fmt.Errorf("duplicate key value violates unique"))
+					).WillReturnError(fmt.Errorf("ERROR: duplicate key value violates unique constraint \"idx_location_slug\" (SQLSTATE 23505)"))
 				mock.ExpectRollback()
 
 				body, err := json.Marshal(&generated.LocationCreate{
