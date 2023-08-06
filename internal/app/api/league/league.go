@@ -80,7 +80,7 @@ func (c *Controller) CreateLeague(ctx *gin.Context) {
 			Name:    league.Name,
 			Slug:    league.Slug,
 			OwnerId: league.OwnerID.String(),
-			Location: generated.Location{
+			Location: &generated.Location{
 				Address:      location.Address,
 				Id:           location.ID.String(),
 				Name:         location.Name,
@@ -110,7 +110,7 @@ func (c *Controller) ListLeagues(ctx *gin.Context) {
 			Id:   league.ID.String(),
 			Name: league.Name,
 			Slug: league.Slug,
-			Location: generated.Location{
+			Location: &generated.Location{
 				Address:      league.Location.Address,
 				Id:           league.Location.ID.String(),
 				Name:         league.Location.Name,
@@ -149,7 +149,7 @@ func (c *Controller) GetLeagueWithSlug(ctx *gin.Context, slug string) {
 			Id:   dbResult.ID.String(),
 			Name: dbResult.Name,
 			Slug: dbResult.Slug,
-			Location: generated.Location{
+			Location: &generated.Location{
 				Address:      dbResult.Location.Address,
 				Id:           dbResult.Location.ID.String(),
 				Name:         dbResult.Location.Name,

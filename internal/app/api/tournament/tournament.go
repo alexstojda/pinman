@@ -84,11 +84,25 @@ func (c *Controller) CreateTournament(ctx *gin.Context) {
 			Slug: tournament.Slug,
 			Type: tournament.Type,
 			// Use the original payload settings to avoid having to unmarshal/marshal to the generated type
-			Settings:   payload.Settings,
-			LocationId: tournament.LocationID.String(),
-			LeagueId:   tournament.LeagueID.String(),
-			CreatedAt:  utils.FormatTime(tournament.CreatedAt),
-			UpdatedAt:  utils.FormatTime(tournament.UpdatedAt),
+			Settings: payload.Settings,
+			Location: &generated.Location{
+				Id:           tournament.Location.ID.String(),
+				Slug:         tournament.Location.Slug,
+				Address:      tournament.Location.Address,
+				Name:         tournament.Location.Name,
+				PinballMapId: tournament.Location.PinballMapID,
+				CreatedAt:    utils.FormatTime(tournament.Location.CreatedAt),
+				UpdatedAt:    utils.FormatTime(tournament.Location.UpdatedAt),
+			},
+			League: &generated.League{
+				Id:        tournament.League.ID.String(),
+				Slug:      tournament.League.Slug,
+				Name:      tournament.League.Name,
+				CreatedAt: utils.FormatTime(tournament.League.CreatedAt),
+				UpdatedAt: utils.FormatTime(tournament.League.UpdatedAt),
+			},
+			CreatedAt: utils.FormatTime(tournament.CreatedAt),
+			UpdatedAt: utils.FormatTime(tournament.UpdatedAt),
 		},
 	})
 
@@ -113,7 +127,7 @@ func validateSettingsPayload(payload *generated.TournamentCreate) error {
 // ListTournaments lists all tournaments
 func (c *Controller) ListTournaments(ctx *gin.Context) {
 	var tournaments []models.Tournament
-	result := c.DB.Find(&tournaments)
+	result := c.DB.Preload("League").Preload("Location").Find(&tournaments)
 	if result.Error != nil {
 		log.Error().Err(result.Error).Msg("failed to list tournaments")
 		apierrors.AbortWithError(http.StatusInternalServerError, "failed to list tournaments", ctx)
@@ -132,15 +146,30 @@ func (c *Controller) ListTournaments(ctx *gin.Context) {
 			return
 		}
 		response.Tournaments = append(response.Tournaments, generated.Tournament{
-			Id:         tournament.ID.String(),
-			Name:       tournament.Name,
-			Slug:       tournament.Slug,
-			Type:       tournament.Type,
-			Settings:   *settings,
-			LocationId: tournament.LocationID.String(),
-			LeagueId:   tournament.LeagueID.String(),
-			CreatedAt:  utils.FormatTime(tournament.CreatedAt),
-			UpdatedAt:  utils.FormatTime(tournament.UpdatedAt),
+			Id:       tournament.ID.String(),
+			Name:     tournament.Name,
+			Slug:     tournament.Slug,
+			Type:     tournament.Type,
+			Settings: *settings,
+			Location: &generated.Location{
+				Id:           tournament.Location.ID.String(),
+				Slug:         tournament.Location.Slug,
+				Address:      tournament.Location.Address,
+				Name:         tournament.Location.Name,
+				PinballMapId: tournament.Location.PinballMapID,
+				CreatedAt:    utils.FormatTime(tournament.Location.CreatedAt),
+				UpdatedAt:    utils.FormatTime(tournament.Location.UpdatedAt),
+			},
+			League: &generated.League{
+				Id:        tournament.League.ID.String(),
+				Slug:      tournament.League.Slug,
+				Name:      tournament.League.Name,
+				OwnerId:   tournament.League.OwnerID.String(),
+				CreatedAt: utils.FormatTime(tournament.League.CreatedAt),
+				UpdatedAt: utils.FormatTime(tournament.League.UpdatedAt),
+			},
+			CreatedAt: utils.FormatTime(tournament.CreatedAt),
+			UpdatedAt: utils.FormatTime(tournament.UpdatedAt),
 		})
 	}
 

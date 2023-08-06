@@ -359,8 +359,6 @@ components:
         location:
           allOf:
             - $ref: '#/components/schemas/location'
-          x-oapi-codegen-extra-tags:
-            binding: requred
           x-go-type: Location
         created_at:
           type: string
@@ -375,7 +373,6 @@ components:
         - name
         - slug
         - owner_id
-        - location
         - created_at
         - updated_at
     user:
@@ -483,36 +480,26 @@ components:
       properties:
         id:
           type: string
-          x-oapi-codegen-extra-tags:
-            binding: required
         name:
           type: string
-          x-oapi-codegen-extra-tags:
-            binding: required
         slug:
           type: string
-          x-oapi-codegen-extra-tags:
-            binding: required
         type:
           allOf:
             - $ref: '#/components/schemas/tournamentType'
-          x-oapi-codegen-extra-tags:
-            binding: required
           x-go-type: TournamentType
         settings:
           allOf:
             - $ref: '#/components/schemas/tournamentSettings'
-          x-oapi-codegen-extra-tags:
-            binding: required
           x-go-type: TournamentSettings
-        league_id:
-          type: string
-          x-oapi-codegen-extra-tags:
-            binding: required
-        location_id:
-          type: string
-          x-oapi-codegen-extra-tags:
-            binding: required
+        league:
+          allOf:
+            - $ref: '#/components/schemas/league'
+          x-go-type: League
+        location:
+          allOf:
+            - $ref: '#/components/schemas/location'
+          x-go-type: Location
         created_at:
           type: string
           x-oapi-codegen-extra-tags:
@@ -525,8 +512,6 @@ components:
         - id
         - name
         - slug
-        - league_id
-        - location_id
         - type
         - settings
         - created_at

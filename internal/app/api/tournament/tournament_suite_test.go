@@ -352,6 +352,22 @@ var _ = ginkgo.Describe("Controller", func() {
 							),
 					)
 
+				const leaguesQuery = `SELECT * FROM "leagues"`
+				mock.ExpectQuery(regexp.QuoteMeta(leaguesQuery)).
+					WithArgs(mockTournament.LeagueID.String()).
+					WillReturnRows(
+						sqlmock.NewRows([]string{"id"}).
+							AddRow(mockTournament.LeagueID.String()),
+					)
+
+				const locationsQuery = `SELECT * FROM "locations"`
+				mock.ExpectQuery(regexp.QuoteMeta(locationsQuery)).
+					WithArgs(mockTournament.LocationID.String()).
+					WillReturnRows(
+						sqlmock.NewRows([]string{"id"}).
+							AddRow(mockTournament.LocationID.String()),
+					)
+
 				req, err := http.NewRequest(http.MethodGet, "/", nil)
 				gomega.Expect(err).To(gomega.BeNil())
 
