@@ -1,3 +1,19 @@
+# [0.7.0](https://github.com/alexstojda/pinman/compare/v0.6.0...v0.7.0) (2023-08-06)
+
+
+### Bug Fixes
+
+* **api:** fields should be snake case in API ([e279a3a](https://github.com/alexstojda/pinman/commit/e279a3a528066d5243d8f5375632d15dfc4dac2c))
+* **api:** Fix/standardize db error handling ([1101e0f](https://github.com/alexstojda/pinman/commit/1101e0f00e74cf1f5e1c0c28984614471dc64ad2))
+
+
+### Features
+
+* **tournaments-api:** Add endpoint to create tournament ([fdce652](https://github.com/alexstojda/pinman/commit/fdce652b468dcbd9651b7d5ef823f09ddde06a55))
+* **tournaments-api:** Add endpoint to list tournaments ([8d786c8](https://github.com/alexstojda/pinman/commit/8d786c8ea0c29b46c269b8ed00863a0487ac6e72))
+
+
+
 # [0.6.0](https://github.com/alexstojda/pinman/compare/v0.5.0...v0.6.0) (2023-08-01)
 
 
@@ -45,19 +61,6 @@
 * **backend:** Add create league endpoint ([efbbe0a](https://github.com/alexstojda/pinman/commit/efbbe0a8961d6626c56cf6bb6d791a3e91a5dacc))
 * **backend:** Add get league endpoint ([31632f0](https://github.com/alexstojda/pinman/commit/31632f08c559d51961ac0343efcf011729e70062))
 * **backend:** Add list leagues endpoint ([3b7302c](https://github.com/alexstojda/pinman/commit/3b7302ccc29732f234e574632bab98aa844f6e08))
-
-
-
-## [0.2.6](https://github.com/alexstojda/pinman/compare/v0.2.5...v0.2.6) (2023-01-06)
-
-
-### Bug Fixes
-
-* Add code to correct viper bug ([f3565ce](https://github.com/alexstojda/pinman/commit/f3565ce55e2c41d04f880e2ba3c6c75d028faced))
-* **backend:** Fix serving static app ([4c61fb9](https://github.com/alexstojda/pinman/commit/4c61fb9a4424224941fb0c24d222564daaf278a7))
-* **backend:** Run migrations on every server start ([19c715c](https://github.com/alexstojda/pinman/commit/19c715c04287d8c98a0df79bd599ae0b5cdbcd5f))
-* **frontend:** Set base path to match static serve route ([3c793e6](https://github.com/alexstojda/pinman/commit/3c793e65a3aeb35752952c854da857d09b46e292))
-* Use RAILWAY_STATIC_URL during build ([320e84e](https://github.com/alexstojda/pinman/commit/320e84eaf77868b6cce4fbf93720403fd9628e83))
 
 
 
