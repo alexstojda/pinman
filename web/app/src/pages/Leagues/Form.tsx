@@ -36,7 +36,7 @@ export default function LeagueForm(props: LeagueFormProps) {
   const [slugError, setSlugError] = useState<ReactNode | undefined>(undefined)
   const [leagueData, setLeagueData] = useState<LeagueCreate>({
     name: "",
-    locationId: "",
+    location_id: "",
     slug: "",
   });
 
@@ -71,7 +71,7 @@ export default function LeagueForm(props: LeagueFormProps) {
 
     pinmanApi.leaguesApi().leaguesPost({
       ...leagueData,
-      locationId: locationId,
+      location_id: locationId,
     }).then(() => {
       // navigate(`/leagues/${response.data.league?.slug}`)
       navigate(`/leagues`)
