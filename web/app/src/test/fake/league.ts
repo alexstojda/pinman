@@ -11,7 +11,7 @@ export function league(): League {
     name: name,
     slug: helpers.slugify(name),
     location: location(),
-    ownerId: faker.datatype.uuid(),
+    owner_id: faker.datatype.uuid(),
     created_at: faker.date.recent(5).toISOString(),
     updated_at: faker.date.recent(1).toISOString()
   }
