@@ -1,6 +1,7 @@
 package tournament
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/rs/zerolog/log"
@@ -39,13 +40,13 @@ func (c *Controller) CreateTournament(ctx *gin.Context) {
 
 	league := models.League{}
 	if err := c.DB.First(&league, "id = ?", payload.LeagueId).Error; err != nil {
-		apierrors.AbortWithError(http.StatusBadRequest, err.Error(), ctx)
+		apierrors.AbortWithError(http.StatusBadRequest, fmt.Sprintf("invalid league: %s", err.Error()), ctx)
 		return
 	}
 
 	location := models.Location{}
 	if err := c.DB.First(&location, "id = ?", payload.LocationId).Error; err != nil {
-		apierrors.AbortWithError(http.StatusBadRequest, err.Error(), ctx)
+		apierrors.AbortWithError(http.StatusBadRequest, fmt.Sprintf("invalid location: %s", err.Error()), ctx)
 		return
 	}
 

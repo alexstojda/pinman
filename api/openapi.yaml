@@ -331,7 +331,7 @@ components:
         created_at: created_at
         id: id
         slug: slug
-        ownerId: ownerId
+        owner_id: owner_id
         location:
           id: id
           name: name
@@ -353,7 +353,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             binding: requred
-        ownerId:
+        owner_id:
           type: string
           x-oapi-codegen-extra-tags:
             binding: requred
@@ -375,7 +375,7 @@ components:
         - id
         - name
         - slug
-        - ownerId
+        - owner_id
         - location
         - created_at
         - updated_at
@@ -478,17 +478,9 @@ components:
         name: name
         id: id
         slug: slug
-        leagueId: leagueId
+        league_id: league_id
         address: address
         type: multi_round_tournament
-        location:
-          id: id
-          name: name
-          address: address
-          slug: slug
-          pinball_map_id: pinball_map_id
-          created_at: created_at
-          updated_at: updated_at
         created_at: created_at
         updated_at: updated_at
       properties:
@@ -516,11 +508,11 @@ components:
           x-oapi-codegen-extra-tags:
             binding: required
           x-go-type: TournamentSettings
-        leagueId:
+        league_id:
           type: string
           x-oapi-codegen-extra-tags:
             binding: required
-        locationId:
+        location_id:
           type: string
           x-oapi-codegen-extra-tags:
               binding: required
@@ -536,8 +528,8 @@ components:
         - id
         - name
         - slug
-        - leagueId
-        - locationId
+        - league_id
+        - location_id
         - type
         - settings
         - created_at
@@ -671,7 +663,7 @@ components:
           created_at: created_at
           id: id
           slug: slug
-          ownerId: ownerId
+          owner_id: owner_id
           location:
             id: id
             name: name
@@ -692,7 +684,7 @@ components:
             created_at: created_at
             id: id
             slug: slug
-            ownerId: ownerId
+            owner_id: owner_id
             location:
               id: id
               name: name
@@ -715,7 +707,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             binding: required
-        locationId:
+        location_id:
           type: string
           x-oapi-codegen-extra-tags:
             binding: required
@@ -726,7 +718,7 @@ components:
       type: object
       required:
         - name
-        - locationId
+        - location_id
         - slug
     ###
     # Location Request/Response Schemas
@@ -788,7 +780,7 @@ components:
           created_at: created_at
           id: id
           slug: slug
-          leagueId: leagueId
+          league_id: league_id
           settings:
             rounds: rounds
             games_per_round: games_per_round
@@ -807,7 +799,7 @@ components:
             created_at: created_at
             id: id
             slug: slug
-            leagueId: leagueId
+            league_id: league_id
             settings:
             rounds: rounds
             games_per_round: games_per_round
@@ -826,7 +818,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
               binding: required
-        leagueId:
+        league_id:
           type: string
           x-oapi-codegen-extra-tags:
               binding: required
@@ -834,7 +826,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
               binding: required
-        locationId:
+        location_id:
           type: string
           x-oapi-codegen-extra-tags:
               binding: required
@@ -853,9 +845,9 @@ components:
       type: object
       required:
         - name
-        - leagueId
+        - league_id
         - slug
-        - locationId
+        - location_id
         - type
         - settings
 
