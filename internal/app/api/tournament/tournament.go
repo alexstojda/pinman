@@ -109,3 +109,40 @@ func validateSettingsPayload(payload *generated.TournamentCreate) error {
 
 	return nil
 }
+
+// ListTournaments lists all tournaments
+func (c *Controller) ListTournaments(ctx *gin.Context) {
+	var tournaments []models.Tournament
+	result := c.DB.Find(&tournaments)
+	if result.Error != nil {
+		log.Error().Err(result.Error).Msg("failed to list tournaments")
+		apierrors.AbortWithError(http.StatusInternalServerError, "failed to list tournaments", ctx)
+		return
+	}
+
+	response := generated.TournamentListResponse{
+		Tournaments: []generated.Tournament{},
+	}
+
+	for _, tournament := range tournaments {
+		settings, err := tournament.GetSettings()
+		if err != nil {
+			log.Error().Err(err).Msg("failed to read tournament settings")
+			apierrors.AbortWithError(http.StatusInternalServerError, "failed to read tournament settings", ctx)
+			return
+		}
+		response.Tournaments = append(response.Tournaments, generated.Tournament{
+			Id:         tournament.ID.String(),
+			Name:       tournament.Name,
+			Slug:       tournament.Slug,
+			Type:       tournament.Type,
+			Settings:   *settings,
+			LocationId: tournament.LocationID.String(),
+			LeagueId:   tournament.LeagueID.String(),
+			CreatedAt:  utils.FormatTime(tournament.CreatedAt),
+			UpdatedAt:  utils.FormatTime(tournament.UpdatedAt),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}

@@ -53,7 +53,7 @@ var _ = ginkgo.Describe("Controller", func() {
 		}
 	})
 
-	ginkgo.When("CreateTournament", func() {
+	ginkgo.When("CreateTournament is called", func() {
 		var payload *generated.TournamentCreate
 		ginkgo.BeforeEach(func() {
 			settings := generated.MultiRoundTournamentSettings{
@@ -75,7 +75,7 @@ var _ = ginkgo.Describe("Controller", func() {
 			}
 		})
 
-		ginkgo.Context("when the payload is valid", func() {
+		ginkgo.Context("with a valid payload", func() {
 			ginkgo.It("returns a 201", func() {
 				router.Use(func(c *gin.Context) {
 					c.Set("user", userObj)
@@ -309,6 +309,57 @@ var _ = ginkgo.Describe("Controller", func() {
 				router.ServeHTTP(rr, req)
 
 				gomega.Expect(rr.Code).To(gomega.Equal(http.StatusInternalServerError))
+			})
+		})
+	})
+	ginkgo.Describe("ListTournaments", func() {
+		ginkgo.Context("with a valid request", func() {
+			ginkgo.It("returns a 200", func() {
+				router.Use(func(c *gin.Context) {
+					c.Set("user", userObj)
+				})
+
+				mockMultiRoundSettings := generated.MultiRoundTournamentSettings{
+					GamesPerRound:       4,
+					Rounds:              8,
+					LowestScoresDropped: 3,
+				}
+				mockSettings, err := json.Marshal(mockMultiRoundSettings)
+				gomega.Expect(err).To(gomega.BeNil())
+
+				mockTournament := models.Tournament{
+					ID:         uuid.New(),
+					Name:       "Test Tournament",
+					Slug:       "test-tournament",
+					Type:       generated.MultiRoundTournament,
+					Settings:   mockSettings,
+					LocationID: uuid.New(),
+					LeagueID:   uuid.New(),
+					CreatedAt:  time.Now(),
+					UpdatedAt:  time.Now(),
+				}
+
+				const query = `SELECT * FROM "tournaments"`
+				mock.ExpectQuery(regexp.QuoteMeta(query)).
+					WillReturnRows(
+						sqlmock.NewRows([]string{
+							"id", "name", "slug", "type", "settings", "location_id", "league_id", "created_at", "updated_at",
+						}).
+							AddRow(
+								mockTournament.ID.String(), mockTournament.Name, mockTournament.Slug,
+								mockTournament.Type, mockTournament.Settings, mockTournament.LocationID.String(),
+								mockTournament.LeagueID.String(), mockTournament.CreatedAt, mockTournament.UpdatedAt,
+							),
+					)
+
+				req, err := http.NewRequest(http.MethodGet, "/", nil)
+				gomega.Expect(err).To(gomega.BeNil())
+
+				router.GET("/", controller.ListTournaments)
+				router.ServeHTTP(rr, req)
+
+				gomega.Expect(rr.Code).To(gomega.Equal(http.StatusOK))
+				gomega.Expect(rr.Body.String()).To(gomega.ContainSubstring(mockTournament.Name))
 			})
 		})
 	})
