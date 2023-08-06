@@ -250,23 +250,23 @@ paths:
     # Tournaments
     ###
   /tournaments:
-#    get:
-#      description: Retrieve a list of tournaments
-#      responses:
-#        "200":
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/tournamentListResponse'
-#          description: Successful response
-#        "400":
-#            $ref: "#/components/responses/badRequest"
-#        "401":
-#            $ref: "#/components/responses/unauthorized"
-#        "403":
-#            $ref: "#/components/responses/forbidden"
-#      tags:
-#        - tournaments
+    get:
+      description: Retrieve a list of tournaments
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tournamentListResponse'
+          description: Successful response
+        "400":
+            $ref: "#/components/responses/badRequest"
+        "401":
+            $ref: "#/components/responses/unauthorized"
+        "403":
+            $ref: "#/components/responses/forbidden"
+      tags:
+        - tournaments
     post:
       description: Create a new tournament
       security:
@@ -800,7 +800,6 @@ components:
             id: id
             slug: slug
             league_id: league_id
-            settings:
             rounds: rounds
             games_per_round: games_per_round
             lowest_scores_dropped: lowest_scores_dropped

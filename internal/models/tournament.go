@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 	"pinman/internal/app/generated"
@@ -19,4 +21,23 @@ type Tournament struct {
 	League     League
 	CreatedAt  time.Time `gorm:"type:timestamp;not null;default:now()"`
 	UpdatedAt  time.Time `gorm:"type:timestamp;not null;default:now()"`
+}
+
+func (t *Tournament) GetSettings() (*generated.TournamentSettings, error) {
+	switch t.Type {
+	case generated.MultiRoundTournament:
+		settings := &generated.MultiRoundTournamentSettings{}
+		err := json.Unmarshal(t.Settings, settings)
+		if err != nil {
+			return nil, fmt.Errorf("unmarshalling settings: %w", err)
+		}
+		result := &generated.TournamentSettings{}
+		err = result.FromMultiRoundTournamentSettings(*settings)
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	}
+
+	return nil, fmt.Errorf("unknown tournament type: %s", t.Type)
 }

@@ -88,3 +88,7 @@ func (s *Server) GetLocationsSlug(c *gin.Context, slug string) {
 func (s *Server) PostTournaments(c *gin.Context) {
 	s.Tournament.CreateTournament(c)
 }
+
+func (s *Server) GetTournaments(c *gin.Context) {
+	s.Tournament.ListTournaments(c)
+}
