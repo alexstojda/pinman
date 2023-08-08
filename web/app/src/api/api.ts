@@ -1,4 +1,4 @@
-import {AuthApi, Configuration, ErrorResponse, LeaguesApi, LocationsApi, UserLogin, UsersApi} from "./generated";
+import {AuthApi, Configuration, ErrorResponse, LeaguesApi, LocationsApi, UserLogin, UsersApi, TournamentsApi} from "./generated";
 import {AxiosError} from "axios";
 
 export const TOKEN_KEY = 'token';
@@ -111,6 +111,10 @@ export class Api {
 
   public locationsApi() {
     return new LocationsApi(this.configuration());
+  }
+
+  public tournamentsApi() {
+    return new TournamentsApi(this.configuration());
   }
 
   public parseError(e: AxiosError): ErrorResponse {

@@ -9,6 +9,7 @@ import theme from "./theme"
 import AuthTest from "./pages/AuthTest";
 import SignUpPage from "./pages/SignUp";
 import LeagueListPage from "./pages/Leagues";
+import TournamentsListPage from "./pages/Tournaments";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -28,6 +29,7 @@ function Router() {
     <BrowserRouter basename={'/app'}>
       <Routes>
         <Route path="/" element={<Navigate to={'/leagues'}/>}/>
+        <Route path={"/tournaments"} element={<TournamentsListPage/>} />
         <Route path="/leagues" element={<LeagueListPage/>}/>
         <Route path={"/leagues/create"} element={<LeagueListPage createFormOpen={true} />}/>
         <Route path={"/login"} element={<Login/>}/>

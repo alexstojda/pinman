@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
+  CardHeader, Flex,
   Grid,
   GridItem,
   Heading,
@@ -16,7 +16,8 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Spacer, Text,
+  Spacer,
+  Text,
 } from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
@@ -77,12 +78,16 @@ export default function LeaguesPage(props: LeagueListPageProps) {
         {leagues.length > 0 && leagues.map((league) => (
           <GridItem key={league.id}>
             <Card data-testid="league-card" direction={'row'}>
-              <CardHeader>
-                <Heading lineHeight={'2em'} mt={'0'} mb={'0'} verticalAlign={'middle'} size={'md'}>{league.name}</Heading>
+              <CardHeader display={'flex'} alignItems={"center"} justifyContent={"flex-end"}>
+                <Flex flexDirection="column" textAlign={'right'}>
+                  <Heading size={'md'}>{league.name}</Heading>
+                </Flex>
               </CardHeader>
-              <CardBody textAlign={'right'}>
-                <Text fontSize={'0.8em'}>{league.location.name}</Text>
-                <Text fontSize={'0.65em'}>{league.location.address}</Text>
+              <CardBody display="flex" alignItems="center" justifyContent="flex-end">
+                <Flex flexDirection="column" textAlign={'right'}>
+                  <Text fontSize={'0.8em'}>{league.location!.name}</Text>
+                  <Text fontSize={'0.65em'}>{league.location!.address}</Text>
+                </Flex>
               </CardBody>
             </Card>
           </GridItem>
