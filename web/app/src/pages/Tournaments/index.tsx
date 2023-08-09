@@ -101,14 +101,14 @@ export default function TournamentsListPage(props: TournamentListPageProps) {
             textAlign={'center'}
             fontSize={'4xl'}
             fontWeight={'bold'}>
-            Leagues
+            Tournaments
           </Heading>
           <Spacer/>
           {auth?.user &&
-            <Button data-testid={'create-league'} size={'sm'} onClick={() => {
-              navigate('/leagues/create')
+            <Button data-testid={'create-tournament'} size={'sm'} onClick={() => {
+              navigate('/tournaments/create')
             }}>
-              Create League
+              Create Tournament
             </Button>
           }
         </HStack>

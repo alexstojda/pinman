@@ -20,7 +20,7 @@ beforeEach(() => {
   mockApi.prototype.parseError.mockReset()
 })
 
-describe('LeaguesPage', () => {
+describe('LeaguesListPage', () => {
   it('renders leagues from API', async () => {
     const mockLeagues = Array.from({length: 5}, () => fake.league())
 
