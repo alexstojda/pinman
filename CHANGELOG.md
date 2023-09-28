@@ -1,3 +1,17 @@
+# [0.8.0](https://github.com/alexstojda/pinman/compare/v0.7.0...v0.8.0) (2023-09-28)
+
+
+### Bug Fixes
+
+* **api:** Make nested objects optional, to avoid having to deep-load ownership trees ([ea2efe8](https://github.com/alexstojda/pinman/commit/ea2efe8cb697023690c21cb615993ce4fe30b0f9))
+
+
+### Features
+
+* **tournaments-frontend:** List tournaments page ([2ca7624](https://github.com/alexstojda/pinman/commit/2ca7624144efa18d8d498a537097758e46d05067))
+
+
+
 # [0.7.0](https://github.com/alexstojda/pinman/compare/v0.6.0...v0.7.0) (2023-08-06)
 
 
@@ -50,17 +64,6 @@
 
 * **frontend:** Add create league form ([1f655df](https://github.com/alexstojda/pinman/commit/1f655df387870b43d8311f415e318b766c36c9f8))
 * **frontend:** List leagues on homepage ([87a81cf](https://github.com/alexstojda/pinman/commit/87a81cfc1e72f790826849e064351a22017b22f6))
-
-
-
-# [0.3.0](https://github.com/alexstojda/pinman/compare/v0.2.6...v0.3.0) (2023-07-24)
-
-
-### Features
-
-* **backend:** Add create league endpoint ([efbbe0a](https://github.com/alexstojda/pinman/commit/efbbe0a8961d6626c56cf6bb6d791a3e91a5dacc))
-* **backend:** Add get league endpoint ([31632f0](https://github.com/alexstojda/pinman/commit/31632f08c559d51961ac0343efcf011729e70062))
-* **backend:** Add list leagues endpoint ([3b7302c](https://github.com/alexstojda/pinman/commit/3b7302ccc29732f234e574632bab98aa844f6e08))
 
 
 
